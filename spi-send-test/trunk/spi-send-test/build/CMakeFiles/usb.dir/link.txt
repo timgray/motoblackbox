@@ -1,0 +1,1 @@
+avr-g++   -mmcu=atmega32u2 -gstabs -DF_CPU=16000000  -Os -Wall -Wl,--gc-sections     CMakeFiles/usb.dir/home/iwasz/workspace/spi-send-test/src/main.cc.o  -o usb  

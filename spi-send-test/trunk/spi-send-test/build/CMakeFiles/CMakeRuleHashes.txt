@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+6d7cc4319b36161d3c8c31a8553c560c CMakeFiles/spi-send-test.hex
+724b71a442faac0a85545130ff4a5e29 CMakeFiles/spi-send-test.lss
+3f9f3d62be832821ce28d0adde55b2e0 CMakeFiles/up

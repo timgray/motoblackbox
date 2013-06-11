@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/iwasz/workspace/spi-send-test/src/main.cc
+avr/io.h
+-
+avr/pgmspace.h
+-
+avr/interrupt.h
+-
+stdlib.h
+-
+stdbool.h
+-
+util/delay.h
+-
+avr/power.h
+-
+avr/sleep.h
+-
+

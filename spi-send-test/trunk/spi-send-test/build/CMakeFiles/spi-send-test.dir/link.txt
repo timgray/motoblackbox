@@ -1,0 +1,1 @@
+avr-gcc  -mmcu=atmega32u2 -gstabs -DF_CPU=16000000  -Os -Wall -Wstrict-prototypes -Wl,--gc-sections -std=gnu99     CMakeFiles/spi-send-test.dir/home/iwasz/workspace/spi-send-test/src/main.c.o CMakeFiles/spi-send-test.dir/home/iwasz/workspace/spi-send-test/src/dallas_one_wire.c.o  -o spi-send-test  
