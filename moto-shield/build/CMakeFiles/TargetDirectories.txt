@@ -1,0 +1,4 @@
+/home/iwasz/Documents/workspace-CDT/moto-shield/build/CMakeFiles/moto-shield.dir
+/home/iwasz/Documents/workspace-CDT/moto-shield/build/CMakeFiles/moto-shield.hex.dir
+/home/iwasz/Documents/workspace-CDT/moto-shield/build/CMakeFiles/moto-shield.lss.dir
+/home/iwasz/Documents/workspace-CDT/moto-shield/build/CMakeFiles/up.dir
