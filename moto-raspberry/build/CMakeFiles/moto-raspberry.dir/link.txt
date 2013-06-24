@@ -1,0 +1,1 @@
+/home/iwasz/local/share/raspi-gcc/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-g++   -O3 -march=armv6zk -mtune=arm1176jzf-s    CMakeFiles/moto-raspberry.dir/home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.o  -o moto-raspberry -rdynamic 
