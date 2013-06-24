@@ -1,0 +1,1317 @@
+
+spi-send-test:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000008  00800100  000005d4  00000668  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000005d4  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          0000000b  00800108  00800108  00000670  2**0
+                  ALLOC
+  3 .stab         0000192c  00000000  00000000  00000670  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  4 .stabstr      00000d1a  00000000  00000000  00001f9c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .comment      00000011  00000000  00000000  00002cb6  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 3a 00 	jmp	0x74	; 0x74 <__ctors_end>
+   4:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+   8:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+   c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  10:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  14:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  18:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  1c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  20:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  24:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  28:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  2c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  30:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  34:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  38:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  3c:	0c 94 3d 01 	jmp	0x27a	; 0x27a <__vector_15>
+  40:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  44:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  48:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  4c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  50:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  54:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  58:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  5c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  60:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  64:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  68:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  6c:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+  70:	0c 94 57 00 	jmp	0xae	; 0xae <__bad_interrupt>
+
+00000074 <__ctors_end>:
+  74:	11 24       	eor	r1, r1
+  76:	1f be       	out	0x3f, r1	; 63
+  78:	cf ef       	ldi	r28, 0xFF	; 255
+  7a:	d4 e0       	ldi	r29, 0x04	; 4
+  7c:	de bf       	out	0x3e, r29	; 62
+  7e:	cd bf       	out	0x3d, r28	; 61
+
+00000080 <__do_copy_data>:
+  80:	11 e0       	ldi	r17, 0x01	; 1
+  82:	a0 e0       	ldi	r26, 0x00	; 0
+  84:	b1 e0       	ldi	r27, 0x01	; 1
+  86:	e4 ed       	ldi	r30, 0xD4	; 212
+  88:	f5 e0       	ldi	r31, 0x05	; 5
+  8a:	02 c0       	rjmp	.+4      	; 0x90 <__do_copy_data+0x10>
+  8c:	05 90       	lpm	r0, Z+
+  8e:	0d 92       	st	X+, r0
+  90:	a8 30       	cpi	r26, 0x08	; 8
+  92:	b1 07       	cpc	r27, r17
+  94:	d9 f7       	brne	.-10     	; 0x8c <__do_copy_data+0xc>
+
+00000096 <__do_clear_bss>:
+  96:	11 e0       	ldi	r17, 0x01	; 1
+  98:	a8 e0       	ldi	r26, 0x08	; 8
+  9a:	b1 e0       	ldi	r27, 0x01	; 1
+  9c:	01 c0       	rjmp	.+2      	; 0xa0 <.do_clear_bss_start>
+
+0000009e <.do_clear_bss_loop>:
+  9e:	1d 92       	st	X+, r1
+
+000000a0 <.do_clear_bss_start>:
+  a0:	a3 31       	cpi	r26, 0x13	; 19
+  a2:	b1 07       	cpc	r27, r17
+  a4:	e1 f7       	brne	.-8      	; 0x9e <.do_clear_bss_loop>
+  a6:	0e 94 da 02 	call	0x5b4	; 0x5b4 <main>
+  aa:	0c 94 e8 02 	jmp	0x5d0	; 0x5d0 <_exit>
+
+000000ae <__bad_interrupt>:
+  ae:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000b2 <initSpi>:
+ *
+ */
+void initSpi (void)
+{
+        // Configure port B for SPI slave.
+        DDRB &= ~(1 << SPI_MOSI_PIN);   // input
+  b2:	22 98       	cbi	0x04, 2	; 4
+        DDRB |= (1 << SPI_MISO_PIN);    // output
+  b4:	23 9a       	sbi	0x04, 3	; 4
+        DDRB &= ~(1 << SPI_SS_PIN);     // input
+  b6:	20 98       	cbi	0x04, 0	; 4
+        DDRB &= ~(1 << SPI_SCK_PIN);    // input
+  b8:	21 98       	cbi	0x04, 1	; 4
+
+        SPCR = (0 << SPIE)      // interrupt enabled / disapbled
+  ba:	80 e4       	ldi	r24, 0x40	; 64
+  bc:	8c bd       	out	0x2c, r24	; 44
+  be:	08 95       	ret
+
+000000c0 <initUSART>:
+/**
+ * Transmission only.
+ */
+void initUSART (void)
+{
+        UCSR1B |= (1 << RXEN1);
+  c0:	e9 ec       	ldi	r30, 0xC9	; 201
+  c2:	f0 e0       	ldi	r31, 0x00	; 0
+  c4:	80 81       	ld	r24, Z
+  c6:	80 61       	ori	r24, 0x10	; 16
+  c8:	80 83       	st	Z, r24
+        UCSR1C |= (1 << UCSZ11) | (1 << UCSZ10);
+  ca:	ea ec       	ldi	r30, 0xCA	; 202
+  cc:	f0 e0       	ldi	r31, 0x00	; 0
+  ce:	80 81       	ld	r24, Z
+  d0:	86 60       	ori	r24, 0x06	; 6
+  d2:	80 83       	st	Z, r24
+        UBRR1H = (BAUD_PRESCALE >> 8);
+  d4:	10 92 cd 00 	sts	0x00CD, r1
+        UBRR1L = BAUD_PRESCALE;
+  d8:	8d e3       	ldi	r24, 0x3D	; 61
+  da:	80 93 cc 00 	sts	0x00CC, r24
+  de:	08 95       	ret
+
+000000e0 <initTimer>:
+/**
+ * Timer at full speed, increases halfMs variable every half ms.
+ */
+void initTimer (void)
+{
+        TCCR1B |= (1 << WGM12) ; // Configure timer 1 for CTC mode
+  e0:	e1 e8       	ldi	r30, 0x81	; 129
+  e2:	f0 e0       	ldi	r31, 0x00	; 0
+  e4:	80 81       	ld	r24, Z
+  e6:	88 60       	ori	r24, 0x08	; 8
+  e8:	80 83       	st	Z, r24
+        TIMSK1 |= (1 << OCIE1A) ; // Enable CTC interrupt
+  ea:	af e6       	ldi	r26, 0x6F	; 111
+  ec:	b0 e0       	ldi	r27, 0x00	; 0
+  ee:	8c 91       	ld	r24, X
+  f0:	82 60       	ori	r24, 0x02	; 2
+  f2:	8c 93       	st	X, r24
+        OCR1A = F_CPU / 1000 - 1; // 1 ms CTC.
+  f4:	8f e7       	ldi	r24, 0x7F	; 127
+  f6:	9e e3       	ldi	r25, 0x3E	; 62
+  f8:	90 93 89 00 	sts	0x0089, r25
+  fc:	80 93 88 00 	sts	0x0088, r24
+        TCCR1B |= (1 << CS10); // Counter running at FCPU speed.
+ 100:	80 81       	ld	r24, Z
+ 102:	81 60       	ori	r24, 0x01	; 1
+ 104:	80 83       	st	Z, r24
+ 106:	08 95       	ret
+
+00000108 <storeTempInBuffer>:
+
+/**
+ *
+ */
+void storeTempInBuffer (void)
+{
+ 108:	0f 93       	push	r16
+ 10a:	1f 93       	push	r17
+ 10c:	cf 93       	push	r28
+ 10e:	df 93       	push	r29
+ 110:	cd b7       	in	r28, 0x3d	; 61
+ 112:	de b7       	in	r29, 0x3e	; 62
+ 114:	29 97       	sbiw	r28, 0x09	; 9
+ 116:	0f b6       	in	r0, 0x3f	; 63
+ 118:	f8 94       	cli
+ 11a:	de bf       	out	0x3e, r29	; 62
+ 11c:	0f be       	out	0x3f, r0	; 63
+ 11e:	cd bf       	out	0x3d, r28	; 61
+        uint8_t crc, i;
+        uint8_t tempBuffer[9];
+
+        dallas_skip_rom ();
+ 120:	0e 94 84 02 	call	0x508	; 0x508 <dallas_skip_rom>
+        dallas_write_byte (0x44);
+ 124:	84 e4       	ldi	r24, 0x44	; 68
+ 126:	0e 94 af 01 	call	0x35e	; 0x35e <dallas_write_byte>
+        dallas_drive_bus();
+ 12a:	0e 94 4e 02 	call	0x49c	; 0x49c <dallas_drive_bus>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 12e:	2f ef       	ldi	r18, 0xFF	; 255
+ 130:	8f e0       	ldi	r24, 0x0F	; 15
+ 132:	97 e2       	ldi	r25, 0x27	; 39
+ 134:	21 50       	subi	r18, 0x01	; 1
+ 136:	80 40       	sbci	r24, 0x00	; 0
+ 138:	90 40       	sbci	r25, 0x00	; 0
+ 13a:	e1 f7       	brne	.-8      	; 0x134 <storeTempInBuffer+0x2c>
+ 13c:	00 c0       	rjmp	.+0      	; 0x13e <storeTempInBuffer+0x36>
+ 13e:	00 00       	nop
+}
+
+/**
+ *
+ */
+void storeTempInBuffer (void)
+ 140:	8e 01       	movw	r16, r28
+ 142:	06 5f       	subi	r16, 0xF6	; 246
+ 144:	1f 4f       	sbci	r17, 0xFF	; 255
+        dallas_write_byte (0x44);
+        dallas_drive_bus();
+        _delay_ms(800);
+
+        do {
+                dallas_skip_rom ();
+ 146:	0e 94 84 02 	call	0x508	; 0x508 <dallas_skip_rom>
+                dallas_write_byte(0xBE);
+ 14a:	8e eb       	ldi	r24, 0xBE	; 190
+ 14c:	0e 94 af 01 	call	0x35e	; 0x35e <dallas_write_byte>
+                dallas_read_buffer((uint8_t *) &tempBuffer, 9);
+ 150:	69 e0       	ldi	r22, 0x09	; 9
+ 152:	ce 01       	movw	r24, r28
+ 154:	01 96       	adiw	r24, 0x01	; 1
+ 156:	0e 94 bc 02 	call	0x578	; 0x578 <dallas_read_buffer>
+                dallas_reset();
+ 15a:	0e 94 90 01 	call	0x320	; 0x320 <dallas_reset>
+ 15e:	fe 01       	movw	r30, r28
+ 160:	31 96       	adiw	r30, 0x01	; 1
+
+                // Checking the CRC...
+
+                crc = 0x00;
+ 162:	80 e0       	ldi	r24, 0x00	; 0
+
+                for (i = 0; i < 9; i++) {
+                        crc = _crc_ibutton_update(crc, tempBuffer[i]);
+ 164:	91 91       	ld	r25, Z+
+
+static __inline__ uint8_t
+_crc_ibutton_update(uint8_t __crc, uint8_t __data)
+{
+	uint8_t __i, __pattern;
+	__asm__ __volatile__ (
+ 166:	89 27       	eor	r24, r25
+ 168:	98 e0       	ldi	r25, 0x08	; 8
+ 16a:	2c e8       	ldi	r18, 0x8C	; 140
+ 16c:	86 95       	lsr	r24
+ 16e:	08 f4       	brcc	.+2      	; 0x172 <storeTempInBuffer+0x6a>
+ 170:	82 27       	eor	r24, r18
+ 172:	9a 95       	dec	r25
+ 174:	d9 f7       	brne	.-10     	; 0x16c <storeTempInBuffer+0x64>
+
+                // Checking the CRC...
+
+                crc = 0x00;
+
+                for (i = 0; i < 9; i++) {
+ 176:	e0 17       	cp	r30, r16
+ 178:	f1 07       	cpc	r31, r17
+ 17a:	a1 f7       	brne	.-24     	; 0x164 <storeTempInBuffer+0x5c>
+                        crc = _crc_ibutton_update(crc, tempBuffer[i]);
+                }
+
+        } while (crc != 0x00);
+ 17c:	81 11       	cpse	r24, r1
+ 17e:	e3 cf       	rjmp	.-58     	; 0x146 <storeTempInBuffer+0x3e>
+
+        buffer[BUF_AIR_TEMP_LSB] = tempBuffer[0];
+ 180:	89 81       	ldd	r24, Y+1	; 0x01
+ 182:	80 93 06 01 	sts	0x0106, r24
+        buffer[BUF_AIR_TEMP_MSB] = tempBuffer[1];
+ 186:	8a 81       	ldd	r24, Y+2	; 0x02
+ 188:	80 93 07 01 	sts	0x0107, r24
+}
+ 18c:	29 96       	adiw	r28, 0x09	; 9
+ 18e:	0f b6       	in	r0, 0x3f	; 63
+ 190:	f8 94       	cli
+ 192:	de bf       	out	0x3e, r29	; 62
+ 194:	0f be       	out	0x3f, r0	; 63
+ 196:	cd bf       	out	0x3d, r28	; 61
+ 198:	df 91       	pop	r29
+ 19a:	cf 91       	pop	r28
+ 19c:	1f 91       	pop	r17
+ 19e:	0f 91       	pop	r16
+ 1a0:	08 95       	ret
+
+000001a2 <checkECU>:
+
+/**
+ * Poll for 6 bytes from the ECU.
+ */
+void checkECU (void)
+{
+ 1a2:	cf 93       	push	r28
+ 1a4:	df 93       	push	r29
+ 1a6:	00 d0       	rcall	.+0      	; 0x1a8 <checkECU+0x6>
+ 1a8:	00 d0       	rcall	.+0      	; 0x1aa <checkECU+0x8>
+ 1aa:	00 d0       	rcall	.+0      	; 0x1ac <checkECU+0xa>
+ 1ac:	cd b7       	in	r28, 0x3d	; 61
+ 1ae:	de b7       	in	r29, 0x3e	; 62
+        /// Data from the ECU
+        uint8_t ecuFrame[ECU_FRAME_SIZE] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+ 1b0:	fe 01       	movw	r30, r28
+ 1b2:	31 96       	adiw	r30, 0x01	; 1
+ 1b4:	86 e0       	ldi	r24, 0x06	; 6
+ 1b6:	df 01       	movw	r26, r30
+ 1b8:	1d 92       	st	X+, r1
+ 1ba:	8a 95       	dec	r24
+ 1bc:	e9 f7       	brne	.-6      	; 0x1b8 <checkECU+0x16>
+ 1be:	6e 2f       	mov	r22, r30
+ 1c0:	5f 2f       	mov	r21, r31
+ 1c2:	19 c0       	rjmp	.+50     	; 0x1f6 <checkECU+0x54>
+        uint8_t frameComplete = 0;
+        while (!frameComplete) {
+
+                uint8_t i;
+                for (i = 0; i < ECU_FRAME_SIZE; ++i) {
+                        uint16_t timestampMs = currentMs;
+ 1c4:	20 91 08 01 	lds	r18, 0x0108
+ 1c8:	30 91 09 01 	lds	r19, 0x0109
+
+                        while ((UCSR1A & (1 << RXC1)) == 0)
+ 1cc:	80 91 c8 00 	lds	r24, 0x00C8
+ 1d0:	87 ff       	sbrs	r24, 7
+ 1d2:	fc cf       	rjmp	.-8      	; 0x1cc <checkECU+0x2a>
+                                ;
+
+                        // If reading took too long, skip this frame. It meant, we started from the middle of the frame.
+                        if ((uint16_t)(currentMs - timestampMs) >= ECU_BYTE_DELAY_CANCEL_MS && i > 0) {
+ 1d4:	80 91 08 01 	lds	r24, 0x0108
+ 1d8:	90 91 09 01 	lds	r25, 0x0109
+ 1dc:	82 1b       	sub	r24, r18
+ 1de:	93 0b       	sbc	r25, r19
+ 1e0:	06 97       	sbiw	r24, 0x06	; 6
+ 1e2:	10 f0       	brcs	.+4      	; 0x1e8 <checkECU+0x46>
+ 1e4:	41 11       	cpse	r20, r1
+ 1e6:	07 c0       	rjmp	.+14     	; 0x1f6 <checkECU+0x54>
+                                break;
+                        }
+
+                        ecuFrame[i] = UDR1;
+ 1e8:	80 91 ce 00 	lds	r24, 0x00CE
+ 1ec:	81 93       	st	Z+, r24
+        uint8_t ecuFrame[ECU_FRAME_SIZE] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        uint8_t frameComplete = 0;
+        while (!frameComplete) {
+
+                uint8_t i;
+                for (i = 0; i < ECU_FRAME_SIZE; ++i) {
+ 1ee:	4f 5f       	subi	r20, 0xFF	; 255
+ 1f0:	46 30       	cpi	r20, 0x06	; 6
+ 1f2:	41 f7       	brne	.-48     	; 0x1c4 <checkECU+0x22>
+ 1f4:	04 c0       	rjmp	.+8      	; 0x1fe <checkECU+0x5c>
+ 1f6:	e6 2f       	mov	r30, r22
+ 1f8:	f5 2f       	mov	r31, r21
+
+/**
+ * Poll for 6 bytes from the ECU.
+ */
+void checkECU (void)
+{
+ 1fa:	40 e0       	ldi	r20, 0x00	; 0
+ 1fc:	e3 cf       	rjmp	.-58     	; 0x1c4 <checkECU+0x22>
+                if (i >= ECU_FRAME_SIZE) {
+                        frameComplete = 1;
+                }
+        }
+
+        buffer[BUF_RPM] = ecuFrame[ECU_RPM];
+ 1fe:	8a 81       	ldd	r24, Y+2	; 0x02
+ 200:	80 93 03 01 	sts	0x0103, r24
+        buffer[BUF_VELOCITY] = ecuFrame[ECU_VELOCITY];
+ 204:	8b 81       	ldd	r24, Y+3	; 0x03
+ 206:	80 93 02 01 	sts	0x0102, r24
+        buffer[BUF_ENGINE_TEMP] = ecuFrame[ECU_ENGINE_TEMP];
+ 20a:	8d 81       	ldd	r24, Y+5	; 0x05
+ 20c:	80 93 04 01 	sts	0x0104, r24
+}
+ 210:	26 96       	adiw	r28, 0x06	; 6
+ 212:	0f b6       	in	r0, 0x3f	; 63
+ 214:	f8 94       	cli
+ 216:	de bf       	out	0x3e, r29	; 62
+ 218:	0f be       	out	0x3f, r0	; 63
+ 21a:	cd bf       	out	0x3d, r28	; 61
+ 21c:	df 91       	pop	r29
+ 21e:	cf 91       	pop	r28
+ 220:	08 95       	ret
+
+00000222 <checkTemp>:
+ *
+ */
+void checkTemp (void)
+{
+        // Every minute
+        if ((uint16_t)(currentMs - lastTempReadMs) >= TEMP_READ_TOMEOUT_MS) {
+ 222:	80 91 08 01 	lds	r24, 0x0108
+ 226:	90 91 09 01 	lds	r25, 0x0109
+ 22a:	20 91 00 01 	lds	r18, 0x0100
+ 22e:	30 91 01 01 	lds	r19, 0x0101
+ 232:	82 1b       	sub	r24, r18
+ 234:	93 0b       	sbc	r25, r19
+ 236:	80 36       	cpi	r24, 0x60	; 96
+ 238:	9a 4e       	sbci	r25, 0xEA	; 234
+ 23a:	50 f0       	brcs	.+20     	; 0x250 <checkTemp+0x2e>
+                storeTempInBuffer ();
+ 23c:	0e 94 84 00 	call	0x108	; 0x108 <storeTempInBuffer>
+                lastTempReadMs = currentMs;
+ 240:	80 91 08 01 	lds	r24, 0x0108
+ 244:	90 91 09 01 	lds	r25, 0x0109
+ 248:	90 93 01 01 	sts	0x0101, r25
+ 24c:	80 93 00 01 	sts	0x0100, r24
+ 250:	08 95       	ret
+
+00000252 <checkGPIO>:
+
+/**
+ *
+ */
+void checkGPIO (void)
+{
+ 252:	08 95       	ret
+
+00000254 <sendToHost>:
+/**
+ * Send buffer to SPI master (raspberry).
+ */
+void sendToHost (void)
+{
+        SPDR = 0x00; // Marker byte.
+ 254:	1e bc       	out	0x2e, r1	; 46
+ 256:	80 e0       	ldi	r24, 0x00	; 0
+ 258:	90 e0       	ldi	r25, 0x00	; 0
+
+        for (uint8_t i = 0; i < BUFLEN; ++i) {
+                while (!(SPSR & (1 << SPIF)))
+ 25a:	0d b4       	in	r0, 0x2d	; 45
+ 25c:	07 fe       	sbrs	r0, 7
+ 25e:	fd cf       	rjmp	.-6      	; 0x25a <sendToHost+0x6>
+                        ;
+
+                SPDR = buffer[i];
+ 260:	fc 01       	movw	r30, r24
+ 262:	ee 5f       	subi	r30, 0xFE	; 254
+ 264:	fe 4f       	sbci	r31, 0xFE	; 254
+ 266:	20 81       	ld	r18, Z
+ 268:	2e bd       	out	0x2e, r18	; 46
+ 26a:	01 96       	adiw	r24, 0x01	; 1
+ */
+void sendToHost (void)
+{
+        SPDR = 0x00; // Marker byte.
+
+        for (uint8_t i = 0; i < BUFLEN; ++i) {
+ 26c:	86 30       	cpi	r24, 0x06	; 6
+ 26e:	91 05       	cpc	r25, r1
+ 270:	a1 f7       	brne	.-24     	; 0x25a <sendToHost+0x6>
+                        ;
+
+                SPDR = buffer[i];
+        }
+
+        while (!(SPSR & (1 << SPIF)))
+ 272:	0d b4       	in	r0, 0x2d	; 45
+ 274:	07 fe       	sbrs	r0, 7
+ 276:	fd cf       	rjmp	.-6      	; 0x272 <sendToHost+0x1e>
+                ;
+}
+ 278:	08 95       	ret
+
+0000027a <__vector_15>:
+//                SPDR = buffer[currentByte++];
+//        }
+//}
+
+ISR (TIMER1_COMPA_vect, ISR_BLOCK)
+{
+ 27a:	1f 92       	push	r1
+ 27c:	0f 92       	push	r0
+ 27e:	0f b6       	in	r0, 0x3f	; 63
+ 280:	0f 92       	push	r0
+ 282:	11 24       	eor	r1, r1
+ 284:	8f 93       	push	r24
+ 286:	9f 93       	push	r25
+        ++currentMs;
+ 288:	80 91 08 01 	lds	r24, 0x0108
+ 28c:	90 91 09 01 	lds	r25, 0x0109
+ 290:	01 96       	adiw	r24, 0x01	; 1
+ 292:	90 93 09 01 	sts	0x0109, r25
+ 296:	80 93 08 01 	sts	0x0108, r24
+}
+ 29a:	9f 91       	pop	r25
+ 29c:	8f 91       	pop	r24
+ 29e:	0f 90       	pop	r0
+ 2a0:	0f be       	out	0x3f, r0	; 63
+ 2a2:	0f 90       	pop	r0
+ 2a4:	1f 90       	pop	r1
+ 2a6:	18 95       	reti
+
+000002a8 <dallas_write.part.1>:
+// Functions //
+///////////////
+
+void dallas_write(uint8_t bit) {
+	if (bit == 0x00) {
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 2a8:	8f b7       	in	r24, 0x3f	; 63
+    return 1;
+}
+
+static __inline__ uint8_t __iCliRetVal(void)
+{
+    cli();
+ 2aa:	f8 94       	cli
+			// Configure the pin as an output.
+			DALLAS_DDR |= _BV(DALLAS_PIN);
+ 2ac:	56 9a       	sbi	0x0a, 6	; 10
+		
+			// Pull the bus low.
+			DALLAS_PORT &= ~_BV(DALLAS_PIN);
+ 2ae:	5e 98       	cbi	0x0b, 6	; 11
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 2b0:	e7 e6       	ldi	r30, 0x67	; 103
+ 2b2:	f1 e0       	ldi	r31, 0x01	; 1
+ 2b4:	31 97       	sbiw	r30, 0x01	; 1
+ 2b6:	f1 f7       	brne	.-4      	; 0x2b4 <dallas_write.part.1+0xc>
+ 2b8:	00 c0       	rjmp	.+0      	; 0x2ba <dallas_write.part.1+0x12>
+ 2ba:	00 00       	nop
+		
+			// Wait the required time.
+			_delay_us(90);
+		
+			// Release the bus.
+			DALLAS_PORT |= _BV(DALLAS_PIN);
+ 2bc:	5e 9a       	sbi	0x0b, 6	; 11
+ 2be:	f0 ea       	ldi	r31, 0xA0	; 160
+ 2c0:	fa 95       	dec	r31
+ 2c2:	f1 f7       	brne	.-4      	; 0x2c0 <dallas_write.part.1+0x18>
+    (void)__s;
+}
+
+static __inline__ void __iRestore(const  uint8_t *__s)
+{
+    SREG = *__s;
+ 2c4:	8f bf       	out	0x3f, r24	; 63
+    __asm__ volatile ("" ::: "memory");
+ 2c6:	08 95       	ret
+
+000002c8 <dallas_write>:
+///////////////
+// Functions //
+///////////////
+
+void dallas_write(uint8_t bit) {
+	if (bit == 0x00) {
+ 2c8:	81 11       	cpse	r24, r1
+ 2ca:	02 c0       	rjmp	.+4      	; 0x2d0 <dallas_write+0x8>
+ 2cc:	0c 94 54 01 	jmp	0x2a8	; 0x2a8 <dallas_write.part.1>
+			// Let the rest of the time slot expire.
+			_delay_us(30);
+		}
+	}
+	else {
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 2d0:	8f b7       	in	r24, 0x3f	; 63
+    return 1;
+}
+
+static __inline__ uint8_t __iCliRetVal(void)
+{
+    cli();
+ 2d2:	f8 94       	cli
+			// Configure the pin as an output.
+			DALLAS_DDR |= _BV(DALLAS_PIN);
+ 2d4:	56 9a       	sbi	0x0a, 6	; 10
+		
+			// Pull the bus low.
+			DALLAS_PORT &= ~_BV(DALLAS_PIN);
+ 2d6:	5e 98       	cbi	0x0b, 6	; 11
+ 2d8:	95 e3       	ldi	r25, 0x35	; 53
+ 2da:	9a 95       	dec	r25
+ 2dc:	f1 f7       	brne	.-4      	; 0x2da <dallas_write+0x12>
+ 2de:	00 00       	nop
+		
+			// Wait the required time.
+			_delay_us(10);
+		
+			// Release the bus.
+			DALLAS_PORT |= _BV(DALLAS_PIN);
+ 2e0:	5e 9a       	sbi	0x0b, 6	; 11
+ 2e2:	e7 ec       	ldi	r30, 0xC7	; 199
+ 2e4:	f0 e0       	ldi	r31, 0x00	; 0
+ 2e6:	31 97       	sbiw	r30, 0x01	; 1
+ 2e8:	f1 f7       	brne	.-4      	; 0x2e6 <dallas_write+0x1e>
+ 2ea:	00 c0       	rjmp	.+0      	; 0x2ec <dallas_write+0x24>
+ 2ec:	00 00       	nop
+    (void)__s;
+}
+
+static __inline__ void __iRestore(const  uint8_t *__s)
+{
+    SREG = *__s;
+ 2ee:	8f bf       	out	0x3f, r24	; 63
+    __asm__ volatile ("" ::: "memory");
+ 2f0:	08 95       	ret
+
+000002f2 <dallas_read>:
+}
+
+uint8_t dallas_read(void) {
+	uint8_t reply;
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 2f2:	9f b7       	in	r25, 0x3f	; 63
+    return 1;
+}
+
+static __inline__ uint8_t __iCliRetVal(void)
+{
+    cli();
+ 2f4:	f8 94       	cli
+		// Configure the pin as an output.
+		DALLAS_DDR |= _BV(DALLAS_PIN);
+ 2f6:	56 9a       	sbi	0x0a, 6	; 10
+	
+		// Pull the bus low.
+		DALLAS_PORT &= ~_BV(DALLAS_PIN);
+ 2f8:	5e 98       	cbi	0x0b, 6	; 11
+ 2fa:	2a e0       	ldi	r18, 0x0A	; 10
+ 2fc:	2a 95       	dec	r18
+ 2fe:	f1 f7       	brne	.-4      	; 0x2fc <dallas_read+0xa>
+ 300:	00 c0       	rjmp	.+0      	; 0x302 <dallas_read+0x10>
+	
+		// Wait the required time.
+		_delay_us(2);
+	
+		// Configure as input.
+		DALLAS_DDR &= ~_BV(DALLAS_PIN);
+ 302:	56 98       	cbi	0x0a, 6	; 10
+ 304:	8a e3       	ldi	r24, 0x3A	; 58
+ 306:	8a 95       	dec	r24
+ 308:	f1 f7       	brne	.-4      	; 0x306 <dallas_read+0x14>
+ 30a:	00 c0       	rjmp	.+0      	; 0x30c <dallas_read+0x1a>
+		
+		// Wait for a bit.
+		_delay_us(11);
+		
+		if ((DALLAS_PORT_IN & _BV(DALLAS_PIN)) == 0x00) {
+ 30c:	89 b1       	in	r24, 0x09	; 9
+ 30e:	2a ef       	ldi	r18, 0xFA	; 250
+ 310:	2a 95       	dec	r18
+ 312:	f1 f7       	brne	.-4      	; 0x310 <dallas_read+0x1e>
+ 314:	00 c0       	rjmp	.+0      	; 0x316 <dallas_read+0x24>
+    (void)__s;
+}
+
+static __inline__ void __iRestore(const  uint8_t *__s)
+{
+    SREG = *__s;
+ 316:	9f bf       	out	0x3f, r25	; 63
+		// Let the rest of the time slot expire.
+		_delay_us(47);
+	}
+	
+	return reply;
+}
+ 318:	86 fb       	bst	r24, 6
+ 31a:	88 27       	eor	r24, r24
+ 31c:	80 f9       	bld	r24, 0
+ 31e:	08 95       	ret
+
+00000320 <dallas_reset>:
+	uint8_t reply;
+	
+	// Reset the slave_reply variable.
+	reply = 0x00;
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 320:	9f b7       	in	r25, 0x3f	; 63
+    return 1;
+}
+
+static __inline__ uint8_t __iCliRetVal(void)
+{
+    cli();
+ 322:	f8 94       	cli
+	
+		// Configure the pin as an output.
+		DALLAS_DDR |= _BV(DALLAS_PIN);
+ 324:	56 9a       	sbi	0x0a, 6	; 10
+	
+		// Pull the bus low.
+		DALLAS_PORT &= ~_BV(DALLAS_PIN);
+ 326:	5e 98       	cbi	0x0b, 6	; 11
+ 328:	ef ec       	ldi	r30, 0xCF	; 207
+ 32a:	f7 e0       	ldi	r31, 0x07	; 7
+ 32c:	31 97       	sbiw	r30, 0x01	; 1
+ 32e:	f1 f7       	brne	.-4      	; 0x32c <dallas_reset+0xc>
+ 330:	00 c0       	rjmp	.+0      	; 0x332 <dallas_reset+0x12>
+ 332:	00 00       	nop
+	
+		// Wait the required time.
+		_delay_us(500); // 500 uS
+	
+		// Switch to an input, enable the pin change interrupt, and wait.
+		DALLAS_DDR &= ~_BV(DALLAS_PIN);
+ 334:	56 98       	cbi	0x0a, 6	; 10
+ 336:	e7 e1       	ldi	r30, 0x17	; 23
+ 338:	f1 e0       	ldi	r31, 0x01	; 1
+ 33a:	31 97       	sbiw	r30, 0x01	; 1
+ 33c:	f1 f7       	brne	.-4      	; 0x33a <dallas_reset+0x1a>
+ 33e:	00 c0       	rjmp	.+0      	; 0x340 <dallas_reset+0x20>
+ 340:	00 00       	nop
+		
+		_delay_us(70);
+		
+		if ((DALLAS_PORT_IN & _BV(DALLAS_PIN)) == 0x00) {
+ 342:	89 b1       	in	r24, 0x09	; 9
+ 344:	ef e8       	ldi	r30, 0x8F	; 143
+ 346:	f6 e0       	ldi	r31, 0x06	; 6
+ 348:	31 97       	sbiw	r30, 0x01	; 1
+ 34a:	f1 f7       	brne	.-4      	; 0x348 <dallas_reset+0x28>
+ 34c:	00 c0       	rjmp	.+0      	; 0x34e <dallas_reset+0x2e>
+ 34e:	00 00       	nop
+    (void)__s;
+}
+
+static __inline__ void __iRestore(const  uint8_t *__s)
+{
+    SREG = *__s;
+ 350:	9f bf       	out	0x3f, r25	; 63
+ 352:	86 fb       	bst	r24, 6
+ 354:	88 27       	eor	r24, r24
+ 356:	80 f9       	bld	r24, 0
+		
+		_delay_us(420);
+	}
+	
+	return reply;
+}
+ 358:	91 e0       	ldi	r25, 0x01	; 1
+ 35a:	89 27       	eor	r24, r25
+ 35c:	08 95       	ret
+
+0000035e <dallas_write_byte>:
+
+void dallas_write_byte(uint8_t byte) {
+ 35e:	cf 93       	push	r28
+ 360:	df 93       	push	r29
+ 362:	d8 2f       	mov	r29, r24
+ 364:	c8 e0       	ldi	r28, 0x08	; 8
+	uint8_t position;
+	
+	for (position = 0x00; position < 0x08; position++) {
+		dallas_write(byte & 0x01);
+ 366:	8d 2f       	mov	r24, r29
+ 368:	81 70       	andi	r24, 0x01	; 1
+ 36a:	0e 94 64 01 	call	0x2c8	; 0x2c8 <dallas_write>
+		
+		byte = (byte >> 1);
+ 36e:	d6 95       	lsr	r29
+ 370:	c1 50       	subi	r28, 0x01	; 1
+}
+
+void dallas_write_byte(uint8_t byte) {
+	uint8_t position;
+	
+	for (position = 0x00; position < 0x08; position++) {
+ 372:	c9 f7       	brne	.-14     	; 0x366 <dallas_write_byte+0x8>
+		dallas_write(byte & 0x01);
+		
+		byte = (byte >> 1);
+	}
+}
+ 374:	df 91       	pop	r29
+ 376:	cf 91       	pop	r28
+ 378:	08 95       	ret
+
+0000037a <dallas_discover_identifier>:
+
+DALLAS_IDENTIFIER_LIST_t * get_identifier_list(void) {
+	return &identifier_list;
+}
+
+static uint8_t dallas_discover_identifier(DALLAS_IDENTIFIER_t * current_identifier, DALLAS_IDENTIFIER_t * last_identifier) {
+ 37a:	bf 92       	push	r11
+ 37c:	cf 92       	push	r12
+ 37e:	df 92       	push	r13
+ 380:	ef 92       	push	r14
+ 382:	ff 92       	push	r15
+ 384:	0f 93       	push	r16
+ 386:	1f 93       	push	r17
+ 388:	cf 93       	push	r28
+ 38a:	df 93       	push	r29
+ 38c:	ec 01       	movw	r28, r24
+ 38e:	8b 01       	movw	r16, r22
+	uint8_t identifier_diverged;
+	
+	identifier_diverged = 0x00;
+	identifier_bit = 0x00;
+	
+	dallas_reset();
+ 390:	0e 94 90 01 	call	0x320	; 0x320 <dallas_reset>
+	dallas_write_byte(SEARCH_ROM_COMMAND);
+ 394:	80 ef       	ldi	r24, 0xF0	; 240
+ 396:	0e 94 af 01 	call	0x35e	; 0x35e <dallas_write_byte>
+	uint8_t received_two_bits;
+	uint8_t current_bit;
+	uint8_t current_byte;
+	uint8_t identifier_diverged;
+	
+	identifier_diverged = 0x00;
+ 39a:	c1 2c       	mov	r12, r1
+	identifier_bit = 0x00;
+	
+	dallas_reset();
+	dallas_write_byte(SEARCH_ROM_COMMAND);
+	
+	for (identifier_bit = 0; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+ 39c:	d1 2c       	mov	r13, r1
+				identifier_diverged = 0x01;
+				
+				if ((last_identifier->identifier[current_byte] & _BV(current_bit)) == 0x00) {
+					// Then we choose 1.
+					
+					current_identifier->identifier[current_byte] += (1 << current_bit);
+ 39e:	ee 24       	eor	r14, r14
+ 3a0:	e3 94       	inc	r14
+ 3a2:	f1 2c       	mov	r15, r1
+	
+	dallas_reset();
+	dallas_write_byte(SEARCH_ROM_COMMAND);
+	
+	for (identifier_bit = 0; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+		received_two_bits = (dallas_read() << 1);
+ 3a4:	0e 94 79 01 	call	0x2f2	; 0x2f2 <dallas_read>
+ 3a8:	b8 2e       	mov	r11, r24
+ 3aa:	bb 0c       	add	r11, r11
+		received_two_bits += dallas_read();
+ 3ac:	0e 94 79 01 	call	0x2f2	; 0x2f2 <dallas_read>
+ 3b0:	8b 0d       	add	r24, r11
+		
+		current_byte = identifier_bit / 8;
+		current_bit = identifier_bit - (current_byte * 8);
+ 3b2:	ed 2d       	mov	r30, r13
+ 3b4:	e6 95       	lsr	r30
+ 3b6:	e6 95       	lsr	r30
+ 3b8:	e6 95       	lsr	r30
+ 3ba:	9d 2d       	mov	r25, r13
+ 3bc:	97 70       	andi	r25, 0x07	; 7
+		
+		if (received_two_bits == 0x02) {
+ 3be:	82 30       	cpi	r24, 0x02	; 2
+ 3c0:	91 f4       	brne	.+36     	; 0x3e6 <dallas_discover_identifier+0x6c>
+			// All devices have a 1 at this position.
+			
+			current_identifier->identifier[current_byte] += (1 << current_bit);
+ 3c2:	9e 01       	movw	r18, r28
+ 3c4:	2e 0f       	add	r18, r30
+ 3c6:	31 1d       	adc	r19, r1
+ 3c8:	f9 01       	movw	r30, r18
+ 3ca:	97 01       	movw	r18, r14
+ 3cc:	02 c0       	rjmp	.+4      	; 0x3d2 <dallas_discover_identifier+0x58>
+ 3ce:	22 0f       	add	r18, r18
+ 3d0:	33 1f       	adc	r19, r19
+ 3d2:	9a 95       	dec	r25
+ 3d4:	e2 f7       	brpl	.-8      	; 0x3ce <dallas_discover_identifier+0x54>
+ 3d6:	c9 01       	movw	r24, r18
+ 3d8:	90 81       	ld	r25, Z
+ 3da:	98 0f       	add	r25, r24
+ 3dc:	90 83       	st	Z, r25
+			
+			dallas_write(0x01);
+ 3de:	81 e0       	ldi	r24, 0x01	; 1
+ 3e0:	0e 94 64 01 	call	0x2c8	; 0x2c8 <dallas_write>
+ 3e4:	2f c0       	rjmp	.+94     	; 0x444 <dallas_discover_identifier+0xca>
+		}
+		else if (received_two_bits == 0x01) {
+ 3e6:	81 30       	cpi	r24, 0x01	; 1
+ 3e8:	09 f4       	brne	.+2      	; 0x3ec <dallas_discover_identifier+0x72>
+ 3ea:	2a c0       	rjmp	.+84     	; 0x440 <dallas_discover_identifier+0xc6>
+			// All devices have a 0 at this position.
+			
+			dallas_write(0x00);
+		}
+		else if (received_two_bits == 0x00) {
+ 3ec:	81 11       	cpse	r24, r1
+ 3ee:	33 c0       	rjmp	.+102    	; 0x456 <dallas_discover_identifier+0xdc>
+			if ((identifier_diverged == 0x00) && (last_identifier != 0x00)) {
+ 3f0:	c1 10       	cpse	r12, r1
+ 3f2:	26 c0       	rjmp	.+76     	; 0x440 <dallas_discover_identifier+0xc6>
+ 3f4:	01 15       	cp	r16, r1
+ 3f6:	11 05       	cpc	r17, r1
+ 3f8:	19 f1       	breq	.+70     	; 0x440 <dallas_discover_identifier+0xc6>
+				identifier_diverged = 0x01;
+				
+				if ((last_identifier->identifier[current_byte] & _BV(current_bit)) == 0x00) {
+ 3fa:	f0 e0       	ldi	r31, 0x00	; 0
+ 3fc:	d8 01       	movw	r26, r16
+ 3fe:	ae 0f       	add	r26, r30
+ 400:	bf 1f       	adc	r27, r31
+ 402:	2c 91       	ld	r18, X
+ 404:	30 e0       	ldi	r19, 0x00	; 0
+ 406:	09 2e       	mov	r0, r25
+ 408:	02 c0       	rjmp	.+4      	; 0x40e <dallas_discover_identifier+0x94>
+ 40a:	35 95       	asr	r19
+ 40c:	27 95       	ror	r18
+ 40e:	0a 94       	dec	r0
+ 410:	e2 f7       	brpl	.-8      	; 0x40a <dallas_discover_identifier+0x90>
+ 412:	20 fd       	sbrc	r18, 0
+ 414:	10 c0       	rjmp	.+32     	; 0x436 <dallas_discover_identifier+0xbc>
+					// Then we choose 1.
+					
+					current_identifier->identifier[current_byte] += (1 << current_bit);
+ 416:	ec 0f       	add	r30, r28
+ 418:	fd 1f       	adc	r31, r29
+ 41a:	97 01       	movw	r18, r14
+ 41c:	02 c0       	rjmp	.+4      	; 0x422 <dallas_discover_identifier+0xa8>
+ 41e:	22 0f       	add	r18, r18
+ 420:	33 1f       	adc	r19, r19
+ 422:	9a 95       	dec	r25
+ 424:	e2 f7       	brpl	.-8      	; 0x41e <dallas_discover_identifier+0xa4>
+ 426:	c9 01       	movw	r24, r18
+ 428:	90 81       	ld	r25, Z
+ 42a:	98 0f       	add	r25, r24
+ 42c:	90 83       	st	Z, r25
+					
+					dallas_write(0x01);
+ 42e:	81 e0       	ldi	r24, 0x01	; 1
+ 430:	0e 94 64 01 	call	0x2c8	; 0x2c8 <dallas_write>
+ 434:	02 c0       	rjmp	.+4      	; 0x43a <dallas_discover_identifier+0xc0>
+ 436:	0e 94 54 01 	call	0x2a8	; 0x2a8 <dallas_write.part.1>
+			
+			dallas_write(0x00);
+		}
+		else if (received_two_bits == 0x00) {
+			if ((identifier_diverged == 0x00) && (last_identifier != 0x00)) {
+				identifier_diverged = 0x01;
+ 43a:	cc 24       	eor	r12, r12
+ 43c:	c3 94       	inc	r12
+ 43e:	02 c0       	rjmp	.+4      	; 0x444 <dallas_discover_identifier+0xca>
+ 440:	0e 94 54 01 	call	0x2a8	; 0x2a8 <dallas_write.part.1>
+	identifier_bit = 0x00;
+	
+	dallas_reset();
+	dallas_write_byte(SEARCH_ROM_COMMAND);
+	
+	for (identifier_bit = 0; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+ 444:	d3 94       	inc	r13
+ 446:	30 e4       	ldi	r19, 0x40	; 64
+ 448:	d3 12       	cpse	r13, r19
+ 44a:	ac cf       	rjmp	.-168    	; 0x3a4 <dallas_discover_identifier+0x2a>
+			// Error!
+			return DALLAS_IDENTIFIER_SEARCH_ERROR;
+		}
+	}
+	
+	if (identifier_diverged == 0x00) {
+ 44c:	81 e0       	ldi	r24, 0x01	; 1
+ 44e:	cc 20       	and	r12, r12
+ 450:	19 f0       	breq	.+6      	; 0x458 <dallas_discover_identifier+0xde>
+ 452:	80 e0       	ldi	r24, 0x00	; 0
+ 454:	01 c0       	rjmp	.+2      	; 0x458 <dallas_discover_identifier+0xde>
+				dallas_write(0x00);
+			}
+		}
+		else {
+			// Error!
+			return DALLAS_IDENTIFIER_SEARCH_ERROR;
+ 456:	82 e0       	ldi	r24, 0x02	; 2
+		return DALLAS_IDENTIFIER_DONE;
+	}
+	else {
+		return DALLAS_IDENTIFIER_NO_ERROR;
+	}
+}
+ 458:	df 91       	pop	r29
+ 45a:	cf 91       	pop	r28
+ 45c:	1f 91       	pop	r17
+ 45e:	0f 91       	pop	r16
+ 460:	ff 90       	pop	r15
+ 462:	ef 90       	pop	r14
+ 464:	df 90       	pop	r13
+ 466:	cf 90       	pop	r12
+ 468:	bf 90       	pop	r11
+ 46a:	08 95       	ret
+
+0000046c <dallas_read_byte>:
+		
+		byte = (byte >> 1);
+	}
+}
+
+uint8_t dallas_read_byte(void) {
+ 46c:	1f 93       	push	r17
+ 46e:	cf 93       	push	r28
+ 470:	df 93       	push	r29
+ 472:	c0 e0       	ldi	r28, 0x00	; 0
+ 474:	d0 e0       	ldi	r29, 0x00	; 0
+	uint8_t byte;
+	uint8_t position;
+	
+	byte = 0x00;
+ 476:	10 e0       	ldi	r17, 0x00	; 0
+	
+	for (position = 0x00; position < 0x08; position++) {
+		byte += (dallas_read() << position);
+ 478:	0e 94 79 01 	call	0x2f2	; 0x2f2 <dallas_read>
+ 47c:	28 2f       	mov	r18, r24
+ 47e:	0c 2e       	mov	r0, r28
+ 480:	01 c0       	rjmp	.+2      	; 0x484 <dallas_read_byte+0x18>
+ 482:	22 0f       	add	r18, r18
+ 484:	0a 94       	dec	r0
+ 486:	ea f7       	brpl	.-6      	; 0x482 <dallas_read_byte+0x16>
+ 488:	12 0f       	add	r17, r18
+ 48a:	21 96       	adiw	r28, 0x01	; 1
+	uint8_t byte;
+	uint8_t position;
+	
+	byte = 0x00;
+	
+	for (position = 0x00; position < 0x08; position++) {
+ 48c:	c8 30       	cpi	r28, 0x08	; 8
+ 48e:	d1 05       	cpc	r29, r1
+ 490:	99 f7       	brne	.-26     	; 0x478 <dallas_read_byte+0xc>
+		byte += (dallas_read() << position);
+	}
+	
+	return byte;
+}
+ 492:	81 2f       	mov	r24, r17
+ 494:	df 91       	pop	r29
+ 496:	cf 91       	pop	r28
+ 498:	1f 91       	pop	r17
+ 49a:	08 95       	ret
+
+0000049c <dallas_drive_bus>:
+
+// Uses the uC to power the bus.
+void dallas_drive_bus(void) {
+	// Configure the pin as an output.
+	DALLAS_DDR |= _BV(DALLAS_PIN);
+ 49c:	56 9a       	sbi	0x0a, 6	; 10
+	
+	// Set the bus high.
+	DALLAS_PORT |= _BV(DALLAS_PIN);
+ 49e:	5e 9a       	sbi	0x0b, 6	; 11
+ 4a0:	08 95       	ret
+
+000004a2 <dallas_match_rom>:
+}
+
+void dallas_match_rom(DALLAS_IDENTIFIER_t * identifier) {
+ 4a2:	ef 92       	push	r14
+ 4a4:	ff 92       	push	r15
+ 4a6:	0f 93       	push	r16
+ 4a8:	1f 93       	push	r17
+ 4aa:	cf 93       	push	r28
+ 4ac:	df 93       	push	r29
+ 4ae:	1f 92       	push	r1
+ 4b0:	cd b7       	in	r28, 0x3d	; 61
+ 4b2:	de b7       	in	r29, 0x3e	; 62
+ 4b4:	7c 01       	movw	r14, r24
+	uint8_t identifier_bit;
+	uint8_t current_byte;
+	uint8_t current_bit;
+	
+	dallas_reset();
+ 4b6:	0e 94 90 01 	call	0x320	; 0x320 <dallas_reset>
+	dallas_write_byte(MATCH_ROM_COMMAND);
+ 4ba:	85 e5       	ldi	r24, 0x55	; 85
+ 4bc:	0e 94 af 01 	call	0x35e	; 0x35e <dallas_write_byte>
+	
+	for (identifier_bit = 0x00; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+ 4c0:	20 e0       	ldi	r18, 0x00	; 0
+		current_byte = identifier_bit / 8;
+		current_bit = identifier_bit - (current_byte * 8);
+		
+		dallas_write(identifier->identifier[current_byte] & _BV(current_bit));
+ 4c2:	01 e0       	ldi	r16, 0x01	; 1
+ 4c4:	10 e0       	ldi	r17, 0x00	; 0
+	dallas_reset();
+	dallas_write_byte(MATCH_ROM_COMMAND);
+	
+	for (identifier_bit = 0x00; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+		current_byte = identifier_bit / 8;
+		current_bit = identifier_bit - (current_byte * 8);
+ 4c6:	32 2f       	mov	r19, r18
+ 4c8:	36 95       	lsr	r19
+ 4ca:	36 95       	lsr	r19
+ 4cc:	36 95       	lsr	r19
+ 4ce:	82 2f       	mov	r24, r18
+ 4d0:	87 70       	andi	r24, 0x07	; 7
+		
+		dallas_write(identifier->identifier[current_byte] & _BV(current_bit));
+ 4d2:	a8 01       	movw	r20, r16
+ 4d4:	02 c0       	rjmp	.+4      	; 0x4da <dallas_match_rom+0x38>
+ 4d6:	44 0f       	add	r20, r20
+ 4d8:	55 1f       	adc	r21, r21
+ 4da:	8a 95       	dec	r24
+ 4dc:	e2 f7       	brpl	.-8      	; 0x4d6 <dallas_match_rom+0x34>
+ 4de:	ca 01       	movw	r24, r20
+ 4e0:	f7 01       	movw	r30, r14
+ 4e2:	e3 0f       	add	r30, r19
+ 4e4:	f1 1d       	adc	r31, r1
+ 4e6:	90 81       	ld	r25, Z
+ 4e8:	89 23       	and	r24, r25
+ 4ea:	29 83       	std	Y+1, r18	; 0x01
+ 4ec:	0e 94 64 01 	call	0x2c8	; 0x2c8 <dallas_write>
+	uint8_t current_bit;
+	
+	dallas_reset();
+	dallas_write_byte(MATCH_ROM_COMMAND);
+	
+	for (identifier_bit = 0x00; identifier_bit < DALLAS_NUM_IDENTIFIER_BITS; identifier_bit++) {
+ 4f0:	29 81       	ldd	r18, Y+1	; 0x01
+ 4f2:	2f 5f       	subi	r18, 0xFF	; 255
+ 4f4:	20 34       	cpi	r18, 0x40	; 64
+ 4f6:	39 f7       	brne	.-50     	; 0x4c6 <dallas_match_rom+0x24>
+		current_byte = identifier_bit / 8;
+		current_bit = identifier_bit - (current_byte * 8);
+		
+		dallas_write(identifier->identifier[current_byte] & _BV(current_bit));
+	}
+}
+ 4f8:	0f 90       	pop	r0
+ 4fa:	df 91       	pop	r29
+ 4fc:	cf 91       	pop	r28
+ 4fe:	1f 91       	pop	r17
+ 500:	0f 91       	pop	r16
+ 502:	ff 90       	pop	r15
+ 504:	ef 90       	pop	r14
+ 506:	08 95       	ret
+
+00000508 <dallas_skip_rom>:
+
+void dallas_skip_rom(void) {
+	dallas_reset();
+ 508:	0e 94 90 01 	call	0x320	; 0x320 <dallas_reset>
+	dallas_write_byte(SKIP_ROM_COMMAND);
+ 50c:	8c ec       	ldi	r24, 0xCC	; 204
+ 50e:	0c 94 af 01 	jmp	0x35e	; 0x35e <dallas_write_byte>
+
+00000512 <dallas_search_identifiers>:
+	uint8_t current_device;
+	uint8_t return_code;
+	
+	for (current_device = 0x00; current_device < DALLAS_NUM_DEVICES; current_device++) {
+		if (current_device == 0x00) {
+			return_code = dallas_discover_identifier(&identifier_list.identifiers[current_device], 0x00);
+ 512:	60 e0       	ldi	r22, 0x00	; 0
+ 514:	70 e0       	ldi	r23, 0x00	; 0
+ 516:	8a e0       	ldi	r24, 0x0A	; 10
+ 518:	91 e0       	ldi	r25, 0x01	; 1
+ 51a:	0e 94 bd 01 	call	0x37a	; 0x37a <dallas_discover_identifier>
+		}
+		else {
+			return_code = dallas_discover_identifier(&identifier_list.identifiers[current_device], &identifier_list.identifiers[current_device-1]);
+		}
+		
+		if (return_code == DALLAS_IDENTIFIER_DONE) {
+ 51e:	81 30       	cpi	r24, 0x01	; 1
+ 520:	21 f4       	brne	.+8      	; 0x52a <dallas_search_identifiers+0x18>
+			identifier_list.num_devices = current_device + 0x01;
+ 522:	80 93 12 01 	sts	0x0112, r24
+			return 0x00;
+ 526:	80 e0       	ldi	r24, 0x00	; 0
+ 528:	08 95       	ret
+		}
+		else if (return_code == DALLAS_IDENTIFIER_SEARCH_ERROR) {
+ 52a:	82 30       	cpi	r24, 0x02	; 2
+ 52c:	11 f4       	brne	.+4      	; 0x532 <dallas_search_identifiers+0x20>
+			return 0x01;
+ 52e:	81 e0       	ldi	r24, 0x01	; 1
+ 530:	08 95       	ret
+		}
+	}
+	
+	return 0x02;
+ 532:	82 e0       	ldi	r24, 0x02	; 2
+}
+ 534:	08 95       	ret
+
+00000536 <get_identifier_list>:
+
+DALLAS_IDENTIFIER_LIST_t * get_identifier_list(void) {
+	return &identifier_list;
+}
+ 536:	8a e0       	ldi	r24, 0x0A	; 10
+ 538:	91 e0       	ldi	r25, 0x01	; 1
+ 53a:	08 95       	ret
+
+0000053c <dallas_write_buffer>:
+	else {
+		return DALLAS_IDENTIFIER_NO_ERROR;
+	}
+}
+
+void dallas_write_buffer(uint8_t * buffer, uint8_t buffer_length) {
+ 53c:	ef 92       	push	r14
+ 53e:	ff 92       	push	r15
+ 540:	1f 93       	push	r17
+ 542:	cf 93       	push	r28
+ 544:	df 93       	push	r29
+ 546:	1f 92       	push	r1
+ 548:	cd b7       	in	r28, 0x3d	; 61
+ 54a:	de b7       	in	r29, 0x3e	; 62
+ 54c:	18 2f       	mov	r17, r24
+	uint8_t i;
+	
+	for (i = 0x00; i < buffer_length; i++) {
+ 54e:	e8 2e       	mov	r14, r24
+ 550:	f9 2e       	mov	r15, r25
+ 552:	07 c0       	rjmp	.+14     	; 0x562 <dallas_write_buffer+0x26>
+		dallas_write_byte(buffer[i]);
+ 554:	f7 01       	movw	r30, r14
+ 556:	81 91       	ld	r24, Z+
+ 558:	7f 01       	movw	r14, r30
+ 55a:	69 83       	std	Y+1, r22	; 0x01
+ 55c:	0e 94 af 01 	call	0x35e	; 0x35e <dallas_write_byte>
+ 560:	69 81       	ldd	r22, Y+1	; 0x01
+}
+
+void dallas_write_buffer(uint8_t * buffer, uint8_t buffer_length) {
+	uint8_t i;
+	
+	for (i = 0x00; i < buffer_length; i++) {
+ 562:	8e 2d       	mov	r24, r14
+ 564:	81 1b       	sub	r24, r17
+ 566:	86 17       	cp	r24, r22
+ 568:	a8 f3       	brcs	.-22     	; 0x554 <dallas_write_buffer+0x18>
+		dallas_write_byte(buffer[i]);
+	}
+}
+ 56a:	0f 90       	pop	r0
+ 56c:	df 91       	pop	r29
+ 56e:	cf 91       	pop	r28
+ 570:	1f 91       	pop	r17
+ 572:	ff 90       	pop	r15
+ 574:	ef 90       	pop	r14
+ 576:	08 95       	ret
+
+00000578 <dallas_read_buffer>:
+ 578:	ef 92       	push	r14
+ 57a:	ff 92       	push	r15
+ 57c:	1f 93       	push	r17
+ 57e:	cf 93       	push	r28
+ 580:	df 93       	push	r29
+ 582:	1f 92       	push	r1
+ 584:	cd b7       	in	r28, 0x3d	; 61
+ 586:	de b7       	in	r29, 0x3e	; 62
+ 588:	18 2f       	mov	r17, r24
+ 58a:	e8 2e       	mov	r14, r24
+ 58c:	f9 2e       	mov	r15, r25
+ 58e:	07 c0       	rjmp	.+14     	; 0x59e <dallas_read_buffer+0x26>
+ 590:	69 83       	std	Y+1, r22	; 0x01
+ 592:	0e 94 36 02 	call	0x46c	; 0x46c <dallas_read_byte>
+ 596:	f7 01       	movw	r30, r14
+ 598:	81 93       	st	Z+, r24
+ 59a:	7f 01       	movw	r14, r30
+ 59c:	69 81       	ldd	r22, Y+1	; 0x01
+ 59e:	8e 2d       	mov	r24, r14
+ 5a0:	81 1b       	sub	r24, r17
+ 5a2:	86 17       	cp	r24, r22
+ 5a4:	a8 f3       	brcs	.-22     	; 0x590 <dallas_read_buffer+0x18>
+ 5a6:	0f 90       	pop	r0
+ 5a8:	df 91       	pop	r29
+ 5aa:	cf 91       	pop	r28
+ 5ac:	1f 91       	pop	r17
+ 5ae:	ff 90       	pop	r15
+ 5b0:	ef 90       	pop	r14
+ 5b2:	08 95       	ret
+
+000005b4 <main>:
+/**
+ *
+ */
+int main (void)
+{
+        initSpi ();
+ 5b4:	0e 94 59 00 	call	0xb2	; 0xb2 <initSpi>
+        initUSART ();
+ 5b8:	0e 94 60 00 	call	0xc0	; 0xc0 <initUSART>
+        initTimer ();
+ 5bc:	0e 94 70 00 	call	0xe0	; 0xe0 <initTimer>
+        sei () ;
+ 5c0:	78 94       	sei
+
+        while (1) {
+//                fillCurrentBuffer ();
+                checkECU ();
+ 5c2:	0e 94 d1 00 	call	0x1a2	; 0x1a2 <checkECU>
+                checkTemp ();
+ 5c6:	0e 94 11 01 	call	0x222	; 0x222 <checkTemp>
+                checkGPIO ();
+                sendToHost ();
+ 5ca:	0e 94 2a 01 	call	0x254	; 0x254 <sendToHost>
+ 5ce:	f9 cf       	rjmp	.-14     	; 0x5c2 <main+0xe>
+
+000005d0 <_exit>:
+ 5d0:	f8 94       	cli
+
+000005d2 <__stop_program>:
+ 5d2:	ff cf       	rjmp	.-2      	; 0x5d2 <__stop_program>

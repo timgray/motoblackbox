@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/iwasz/Documents/workspace-CDT/spi-send-test/src/dallas_one_wire.h
+
+/home/iwasz/Documents/workspace-CDT/spi-send-test/src/main.c
+avr/io.h
+-
+util/delay.h
+-
+avr/interrupt.h
+-
+util/atomic.h
+-
+util/crc16.h
+-
+dallas_one_wire.h
+/home/iwasz/Documents/workspace-CDT/spi-send-test/src/dallas_one_wire.h
+
