@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/moto-overlay.dir/home/iwasz/Documents/workspace-CDT/moto-overlay/src/main.cc.o  -o moto-overlay -rdynamic -L/home/iwasz/local/lib -lcairo -lcairo -lpng15 -lfreetype -Wl,-rpath,/home/iwasz/local/lib 
