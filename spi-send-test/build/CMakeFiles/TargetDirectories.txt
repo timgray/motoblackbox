@@ -1,0 +1,4 @@
+/home/iwasz/Documents/workspace-CDT/spi-send-test/build/CMakeFiles/spi-send-test.dir
+/home/iwasz/Documents/workspace-CDT/spi-send-test/build/CMakeFiles/spi-send-test.hex.dir
+/home/iwasz/Documents/workspace-CDT/spi-send-test/build/CMakeFiles/spi-send-test.lss.dir
+/home/iwasz/Documents/workspace-CDT/spi-send-test/build/CMakeFiles/up.dir
