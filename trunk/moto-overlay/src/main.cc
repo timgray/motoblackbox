@@ -36,65 +36,9 @@
 
 #include <glib.h>
 #include <cassert>
+#include "YamahaPainter.h"
 
-void testImage ()
-{
-        double ptSize = 50.0;
-        int device_hdpi = 100;
-        int device_vdpi = 100;
-
-        /* Init freetype */
-        FT_Library ft_library;
-        assert(!FT_Init_FreeType(&ft_library));
-
-        FT_Face ft_face;
-        assert (!FT_New_Face (ft_library, "fonts/7_segment_display.ttf", 0, &ft_face));
-        assert (!FT_Set_Char_Size (ft_face, 0, ptSize, device_hdpi, device_vdpi));
-
-        cairo_font_face_t *cairo_ft_face = cairo_ft_font_face_create_for_ft_face (ft_face, 0);
-
-        cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1280, 720);
-        cairo_t *cr = cairo_create(surface);
-
-//        cairo_select_font_face (cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_face (cr, cairo_ft_face);
-        cairo_set_font_size (cr, 18.0);
-        cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-        cairo_move_to(cr, 1006, 605);
-        cairo_show_text(cr, "222");
-
-        // Dash
-        cairo_surface_t *dashSurface = cairo_image_surface_create_from_png ("image/gauge.png");
-        cairo_save (cr);
-        cairo_translate (cr, 880, 520);
-        cairo_scale (cr, 0.2, 0.2);
-        cairo_set_source_surface (cr, dashSurface, 0, 0);
-        cairo_paint (cr);
-        cairo_restore (cr);
-
-        cairo_surface_t *pointerTransformed = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 500, 500);
-        cairo_t *pointerTransformedCr = cairo_create(pointerTransformed);
-
-        // Pointer
-        cairo_surface_t *pointerSurface = cairo_image_surface_create_from_png ("image/pointer.png");
-        cairo_scale (pointerTransformedCr, 0.2, 0.2);
-//        cairo_translate (pointerTransformedCr, 600, 600);
-        cairo_translate (pointerTransformedCr, 308, 71);
-        cairo_rotate (pointerTransformedCr, 45);
-        cairo_set_source_surface (pointerTransformedCr, pointerSurface, -308, -71);
-        cairo_paint (pointerTransformedCr);
-
-        cairo_set_source_surface (cr, pointerTransformed, 1115.5, 611);
-        cairo_paint (cr);
-
-        cairo_destroy(cr);
-        cairo_surface_write_to_png(surface, "hello.png");
-        cairo_surface_destroy(surface);
-
-        FT_Done_Face (ft_face);
-        FT_Done_FreeType (ft_library);
-}
-
+YamahaPainter painter;
 
 static gboolean on_message (GstBus * bus, GstMessage * message, gpointer user_data)
 {
@@ -151,7 +95,7 @@ static void prepare_overlay (GstElement * overlay, GstCaps * caps, gpointer user
 static void draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp, guint64 duration, gpointer user_data)
 {
         CairoOverlayState *s = (CairoOverlayState *) user_data;
-        double scale;
+        float rpm = 2 * (((timestamp / (int) 1e7) % 70) + 30) / 100.0;
         int width, height;
 
         if (!s->valid)
@@ -160,19 +104,7 @@ static void draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp,
         width = GST_VIDEO_INFO_WIDTH (&s->vinfo);
         height = GST_VIDEO_INFO_HEIGHT (&s->vinfo);
 
-        scale = 2 * (((timestamp / (int) 1e7) % 70) + 30) / 100.0;
-        cairo_translate (cr, width / 2, (height / 2) - 30);
-
-        /* FIXME: this assumes a pixel-aspect-ratio of 1/1 */
-        cairo_scale (cr, scale, scale);
-
-        cairo_move_to (cr, 0, 0);
-        cairo_curve_to (cr, 0, -30, -50, -30, -50, 0);
-        cairo_curve_to (cr, -50, 30, 0, 35, 0, 60);
-        cairo_curve_to (cr, 0, 35, 50, 30, 50, 0);
-        cairo_curve_to (cr, 50, -30, 0, -30, 0, 0);
-        cairo_set_source_rgba (cr, 0.9, 0.0, 0.1, 0.7);
-        cairo_fill (cr);
+        painter.paint (cr, {rpm, 0, 0});
 }
 
 static GstElement *
@@ -211,8 +143,8 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
 
 int main (int argc, char **argv)
 {
-        testImage ();
-        exit (0);
+//        testImage ();
+//        exit (0);
 
         GMainLoop *loop;
         GstElement *pipeline;
