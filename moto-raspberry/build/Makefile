@@ -38,22 +38,19 @@ RM = /usr/bin/cmake -E remove -f
 # Escaping for special characters.
 EQUALS = =
 
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
-
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iwasz/Documents/workspace-CDT/moto-raspberry/build
+CMAKE_SOURCE_DIR = /home/iwasz/workspace/moto-raspberry/build
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iwasz/Documents/workspace-CDT/moto-raspberry/build
+CMAKE_BINARY_DIR = /home/iwasz/workspace/moto-raspberry/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
+	/usr/bin/cmake -i .
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -72,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iwasz/Documents/workspace-CDT/moto-raspberry/build/CMakeFiles /home/iwasz/Documents/workspace-CDT/moto-raspberry/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iwasz/workspace/moto-raspberry/build/CMakeFiles /home/iwasz/workspace/moto-raspberry/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iwasz/Documents/workspace-CDT/moto-raspberry/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iwasz/workspace/moto-raspberry/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -114,29 +111,53 @@ moto-raspberry/fast:
 	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/build
 .PHONY : moto-raspberry/fast
 
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.o: home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.o
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.o
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.o: home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.o
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.o
 
 # target to build an object file
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.o:
-	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.o
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.o
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.o:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.o
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.o
 
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.i: home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.i
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.i
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.i: home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.i
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.i
 
 # target to preprocess a source file
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.i:
-	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.i
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.i
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.i:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.i
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.i
 
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.s: home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.s
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.s
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.s: home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.s
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.s
 
 # target to generate assembly for a file
-home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.s:
-	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.s
-.PHONY : home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.cc.s
+home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.s:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.s
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.c.s
+
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.o: home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.o
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.o
+
+# target to build an object file
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.o:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.o
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.o
+
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.i: home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.i
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.i
+
+# target to preprocess a source file
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.i:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.i
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.i
+
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.s: home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.s
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.s
+
+# target to generate assembly for a file
+home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.s:
+	$(MAKE) -f CMakeFiles/moto-raspberry.dir/build.make CMakeFiles/moto-raspberry.dir/home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.s
+.PHONY : home/iwasz/workspace/moto-raspberry/src/RaspiVid.c.s
 
 # Help Target
 help:
@@ -147,9 +168,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... moto-raspberry"
 	@echo "... rebuild_cache"
-	@echo "... home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.o"
-	@echo "... home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.i"
-	@echo "... home/iwasz/Documents/workspace-CDT/moto-raspberry/src/main.s"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.o"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.i"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiCamControl.s"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiVid.o"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiVid.i"
+	@echo "... home/iwasz/workspace/moto-raspberry/src/RaspiVid.s"
 .PHONY : help
 
 
