@@ -6,24 +6,18 @@
  *  ~~~~~~~~~                                                               *
  ****************************************************************************/
 
-#ifndef YAMAHAPAINTER_H_
-#define YAMAHAPAINTER_H_
+#ifndef FRAMEMAP_H_
+#define FRAMEMAP_H_
 
-#include "IPainter.h"
-#include <cairo.h>
 #include "Frame.h"
+#include <vector>
+#include <string>
+#include <ostream>
 
-class YamahaPainter : public IPainter {
-public:
-        YamahaPainter ();
-        virtual ~YamahaPainter ();
+typedef std::vector <Frame> FrameVector;
 
-        virtual void paint (cairo_t *cr, Frame const &dto);
+FrameVector readFrames (std::string const &path);
 
-private:
+std::ostream &operator<< (std::ostream &o, FrameVector const &map);
 
-        struct Impl;
-        Impl *impl = 0;
-};
-
-#endif /* YAMAHAPAINTER_H_ */
+#endif /* FRAMEMAP_H_ */

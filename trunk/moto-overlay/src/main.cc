@@ -36,10 +36,17 @@
 
 #include <glib.h>
 #include <cassert>
+#include <iostream>
+#include <algorithm>
 #include "YamahaPainter.h"
+#include "FrameMap.h"
 
 YamahaPainter painter;
+FrameVector frames;
 
+/**
+ *
+ */
 static gboolean on_message (GstBus * bus, GstMessage * message, gpointer user_data)
 {
         GMainLoop *loop = (GMainLoop *) user_data;
@@ -92,7 +99,7 @@ static void prepare_overlay (GstElement * overlay, GstCaps * caps, gpointer user
 
 /* Draw the overlay.
  * This function draws a cute "beating" heart. */
-static void draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp, guint64 duration, gpointer user_data)
+static void draw_overlay (GstElement *overlay, cairo_t * cr, guint64 timestamp, guint64 duration, gpointer user_data)
 {
         CairoOverlayState *s = (CairoOverlayState *) user_data;
         float rpm = 2 * (((timestamp / (int) 1e7) % 70) + 30) / 100.0;
@@ -104,47 +111,72 @@ static void draw_overlay (GstElement * overlay, cairo_t * cr, guint64 timestamp,
         width = GST_VIDEO_INFO_WIDTH (&s->vinfo);
         height = GST_VIDEO_INFO_HEIGHT (&s->vinfo);
 
-        painter.paint (cr, {rpm, 0, 0});
+        // TODO more careful timing here.
+        FrameVector::const_iterator i = std::lower_bound (frames.begin (), frames.end (), timestamp / 1000, [](Frame const &f, uint32_t t) { return f.timestamp < t; });
+        Frame currentFrame;
+
+        if (i != frames.end ()) {
+               currentFrame = *i;
+        }
+
+
+#if 0
+        std::cerr << "GST TIME=" << timestamp << ", " << currentFrame << std::endl;
+#endif
+
+        painter.paint (cr, currentFrame);
 }
 
 static GstElement *
 setup_gst_pipeline (CairoOverlayState * overlay_state)
 {
-        GstElement *pipeline;
-        GstElement *cairo_overlay;
-        GstElement *source, *adaptor1, *adaptor2, *sink;
-
-        pipeline = gst_pipeline_new ("cairo-overlay-example");
-
         /* Adaptors needed because cairooverlay only supports ARGB data */
-        source = gst_element_factory_make ("videotestsrc", "source");
-        adaptor1 = gst_element_factory_make ("videoconvert", "adaptor1");
-        cairo_overlay = gst_element_factory_make ("cairooverlay", "overlay");
-        adaptor2 = gst_element_factory_make ("videoconvert", "adaptor2");
-        sink = gst_element_factory_make ("ximagesink", "sink");
-        if (sink == NULL)
-                sink = gst_element_factory_make ("autovideosink", "sink");
+        GstElement *pipeline            = gst_pipeline_new ("cairo-overlay-example");
+        GstElement *source              = gst_element_factory_make ("filesrc", "source");
+        GstElement *filter              = gst_element_factory_make ("capsfilter", "filter");
+        GstElement *parser              = gst_element_factory_make ("h264parse", "parser");
+        GstElement *decoder             = gst_element_factory_make ("avdec_h264", "encoder");
+        GstElement *adaptor1            = gst_element_factory_make ("videoconvert", "adaptor1");
+        GstElement *cairo_overlay       = gst_element_factory_make ("cairooverlay", "overlay");
+        GstElement *adaptor2            = gst_element_factory_make ("videoconvert", "adaptor2");
+//        GstElement *videorate           = gst_element_factory_make ("videorate", "rate");
+        GstElement *sink                = gst_element_factory_make ("autovideosink", "sink");
 
         /* If failing, the element could not be created */
         g_assert (cairo_overlay);
+
+        /* we set the input filename to the source element */
+        g_object_set (G_OBJECT (source), "location", "/home/iwasz/video1.h264", NULL);
+
+        // Set the caps (fps interests us the most).
+        GstCaps *caps = gst_caps_new_simple ("video/x-h264",
+                                             "framerate", GST_TYPE_FRACTION, 30, 1,
+                                              NULL);
+
+        g_object_set (G_OBJECT (filter), "caps", caps, NULL);
+        gst_caps_unref (caps);
 
         /* Hook up the neccesary signals for cairooverlay */
         g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay), overlay_state);
         g_signal_connect (cairo_overlay, "caps-changed", G_CALLBACK (prepare_overlay), overlay_state);
 
-        gst_bin_add_many (GST_BIN (pipeline), source, adaptor1, cairo_overlay, adaptor2, sink, NULL);
+        gst_bin_add_many (GST_BIN (pipeline), source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ sink, NULL);
 
-        if (!gst_element_link_many (source, adaptor1, cairo_overlay, adaptor2, sink, NULL)) {
+        if (!gst_element_link_many (source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ sink, NULL)) {
                 g_warning ("Failed to link elements!");
         }
 
         return pipeline;
 }
 
+
 int main (int argc, char **argv)
 {
-//        testImage ();
-//        exit (0);
+        frames = readFrames ("/home/iwasz/data.csv");
+
+#if 0
+        std::cerr << frames << std::endl;
+#endif
 
         GMainLoop *loop;
         GstElement *pipeline;

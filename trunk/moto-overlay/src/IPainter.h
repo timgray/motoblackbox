@@ -10,12 +10,12 @@
 #define IPAINTER_H_
 
 #include <cairo.h>
-#include "PainterDTO.h"
+#include "Frame.h"
 
 class IPainter {
 public:
         virtual ~IPainter () {}
-        virtual void paint (cairo_t *cr, PainterDTO const &dto) = 0;
+        virtual void paint (cairo_t *cr, Frame const &dto) = 0;
 };
 
 #endif /* IPAINTER_H_ */
