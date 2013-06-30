@@ -69,10 +69,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "interface/mmal/util/mmal_connection.h"
 
 #include "RaspiCamControl.h"
-#include "RaspiPreview.h"
-#include "RaspiCLI.h"
-
-#include <semaphore.h>
 
 /// Camera number to use - we only have one camera, indexed from 0.
 #define CAMERA_NUMBER 0
@@ -110,11 +106,9 @@ typedef struct
    int intraperiod;                    /// Intra-refresh period (key frame rate)
    char *filename;                     /// filename of output file
    int verbose;                        /// !0 if want detailed run information
-   int demoMode;                       /// Run app in demo mode
-   int demoInterval;                   /// Interval between camera settings changes
    int immutableInput;                /// Flag to specify whether encoder works in place or creates a new buffer. Result is preview can display either
                                        /// the camera output or the encoder output (with compression artifacts)
-   RASPIPREVIEW_PARAMETERS preview_parameters;   /// Preview setup parameters
+//   RASPIPREVIEW_PARAMETERS preview_parameters;   /// Preview setup parameters
    RASPICAM_CAMERA_PARAMETERS camera_parameters; /// Camera setup parameters
 
    MMAL_COMPONENT_T *camera_component;    /// Pointer to the camera component
@@ -134,38 +128,6 @@ typedef struct
    int abort;                           /// Set to 1 in callback if an error occurs to attempt to abort the capture
 } PORT_USERDATA;
 
-static void display_valid_parameters(char *app_name);
-
-/// Command ID's and Structure defining our command line options
-#define CommandHelp         0
-#define CommandWidth        1
-#define CommandHeight       2
-#define CommandBitrate      3
-#define CommandOutput       4
-#define CommandVerbose      5
-#define CommandTimeout      6
-#define CommandDemoMode     7
-#define CommandFramerate    8
-#define CommandPreviewEnc   9
-#define CommandIntraPeriod  10
-
-static COMMAND_LIST cmdline_commands[] =
-{
-   { CommandHelp,    "-help",       "?",  "This help information", 0 },
-   { CommandWidth,   "-width",      "w",  "Set image width <size>. Default 1920", 1 },
-   { CommandHeight,  "-height",     "h",  "Set image height <size>. Default 1080", 1 },
-   { CommandBitrate, "-bitrate",    "b",  "Set bitrate. Use bits per second (e.g. 10MBits/s would be -b 10000000)", 1 },
-   { CommandOutput,  "-output",     "o",  "Output filename <filename> (to write to stdout, use '-o -')", 1 },
-   { CommandVerbose, "-verbose",    "v",  "Output verbose information during run", 0 },
-   { CommandTimeout, "-timeout",    "t",  "Time (in ms) to capture for. If not specified, set to 5s. Zero to disable", 1 },
-   { CommandDemoMode,"-demo",       "d",  "Run a demo mode (cycle through range of camera options, no capture)", 1},
-   { CommandFramerate,"-framerate", "fps","Specify the frames per second to record", 1},
-   { CommandPreviewEnc,"-penc",     "e",  "Display preview image *after* encoding (shows compression artifacts)", 0},
-   { CommandIntraPeriod,"-intra",   "g",  "Specify the intra refresh period (key frame rate/GoP size)", 1},
-};
-
-static int cmdline_commands_size = sizeof(cmdline_commands) / sizeof(cmdline_commands[0]);
-
 /**
  * Assign a default set of parameters to the state passed in
  *
@@ -184,17 +146,16 @@ static void default_status(RASPIVID_STATE *state)
 
    // Now set anything non-zero
    state->timeout = 5000;     // 5s delay before take image
-   state->width = 1920;       // Default to 1080p
-   state->height = 1080;
+   state->width = 1280;       // Default to 1080p
+   state->height = 720;
    state->bitrate = 17000000; // This is a decent default bitrate for 1080p
    state->framerate = VIDEO_FRAME_RATE_NUM;
    state->intraperiod = 0;    // Not set
-   state->demoMode = 0;
-   state->demoInterval = 250; // ms
    state->immutableInput = 1;
+   state->filename = "video.h264";
 
    // Setup preview window defaults
-   raspipreview_set_defaults(&state->preview_parameters);
+//   raspipreview_set_defaults(&state->preview_parameters);
 
    // Set up the camera_parameters to default
    raspicamcontrol_set_defaults(&state->camera_parameters);
@@ -216,228 +177,8 @@ static void dump_status(RASPIVID_STATE *state)
    fprintf(stderr, "Width %d, Height %d, filename %s\n", state->width, state->height, state->filename);
    fprintf(stderr, "bitrate %d, framerate %d, time delay %d\n", state->bitrate, state->framerate, state->timeout);
 
-   raspipreview_dump_parameters(&state->preview_parameters);
+//   raspipreview_dump_parameters(&state->preview_parameters);
    raspicamcontrol_dump_parameters(&state->camera_parameters);
-}
-
-/**
- * Parse the incoming command line and put resulting parameters in to the state
- *
- * @param argc Number of arguments in command line
- * @param argv Array of pointers to strings from command line
- * @param state Pointer to state structure to assign any discovered parameters to
- * @return Non-0 if failed for some reason, 0 otherwise
- */
-static int parse_cmdline(int argc, const char **argv, RASPIVID_STATE *state)
-{
-   // Parse the command line arguments.
-   // We are looking for --<something> or -<abreviation of something>
-
-   int valid = 1;
-   int i;
-
-   for (i = 1; i < argc && valid; i++)
-   {
-      int command_id, num_parameters;
-
-      if (!argv[i])
-         continue;
-
-      if (argv[i][0] != '-')
-      {
-         valid = 0;
-         continue;
-      }
-
-      // Assume parameter is valid until proven otherwise
-      valid = 1;
-
-      command_id = raspicli_get_command_id(cmdline_commands, cmdline_commands_size, &argv[i][1], &num_parameters);
-
-      // If we found a command but are missing a parameter, continue (and we will drop out of the loop)
-      if (command_id != -1 && num_parameters > 0 && (i + 1 >= argc) )
-         continue;
-
-      //  We are now dealing with a command line option
-      switch (command_id)
-      {
-      case CommandHelp:
-         display_valid_parameters(basename(argv[0]));
-         return -1;
-
-      case CommandWidth: // Width > 0
-         if (sscanf(argv[i + 1], "%u", &state->width) != 1)
-            valid = 0;
-         else
-            i++;
-         break;
-
-      case CommandHeight: // Height > 0
-         if (sscanf(argv[i + 1], "%u", &state->height) != 1)
-            valid = 0;
-         else
-            i++;
-         break;
-
-      case CommandBitrate: // 1-100
-         if (sscanf(argv[i + 1], "%u", &state->bitrate) == 1)
-         {
-            if (state->bitrate > MAX_BITRATE)
-            {
-               state->bitrate = MAX_BITRATE;
-            }
-            i++;
-         }
-         else
-            valid = 0;
-
-         break;
-
-      case CommandOutput:  // output filename
-      {
-         int len = strlen(argv[i + 1]);
-         if (len)
-         {
-            state->filename = malloc(len + 1);
-            vcos_assert(state->filename);
-            if (state->filename)
-               strncpy(state->filename, argv[i + 1], len);
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandVerbose: // display lots of data during run
-         state->verbose = 1;
-         break;
-
-      case CommandTimeout: // Time to run viewfinder/capture
-      {
-         if (sscanf(argv[i + 1], "%u", &state->timeout) == 1)
-         {
-            // TODO : What limits do we need for timeout?
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandDemoMode: // Run in demo mode - no capture
-      {
-         // Demo mode might have a timing parameter
-         // so check if a) we have another parameter, b) its not the start of the next option
-         if (i + 1 < argc  && argv[i+1][0] != '-')
-         {
-            if (sscanf(argv[i + 1], "%u", &state->demoInterval) == 1)
-            {
-               // TODO : What limits do we need for timeout?
-               if (state->demoInterval == 0)
-                  state->demoInterval = 250; // ms
-
-               state->demoMode = 1;
-               i++;
-            }
-            else
-               valid = 0;
-         }
-         else
-         {
-            state->demoMode = 1;
-         }
-
-         break;
-      }
-
-      case CommandFramerate: // fps to record
-      {
-         if (sscanf(argv[i + 1], "%u", &state->framerate) == 1)
-         {
-            // TODO : What limits do we need for fps 1 - 30 - 120??
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandPreviewEnc:
-         state->immutableInput = 0;
-         break;
-
-      case CommandIntraPeriod: // key frame rate
-      {
-         if (sscanf(argv[i + 1], "%u", &state->intraperiod) == 1)
-            i++;
-         else
-            valid = 0;
-         break;
-      }
-
-      default:
-      {
-         // Try parsing for any image specific parameters
-         // result indicates how many parameters were used up, 0,1,2
-         // but we adjust by -1 as we have used one already
-         const char *second_arg = (i + 1 < argc) ? argv[i + 1] : NULL;
-         int parms_used = (raspicamcontrol_parse_cmdline(&state->camera_parameters, &argv[i][1], second_arg));
-
-         // Still unused, try preview options
-         if (!parms_used)
-            parms_used = raspipreview_parse_cmdline(&state->preview_parameters, &argv[i][1], second_arg);
-
-
-         // If no parms were used, this must be a bad parameters
-         if (!parms_used)
-            valid = 0;
-         else
-            i += parms_used - 1;
-
-         break;
-      }
-      }
-   }
-
-   if (!valid)
-   {
-      fprintf(stderr, "Invalid command line option (%s)\n", argv[i]);
-      return 1;
-   }
-
-   // Always disable verbose if output going to stdout
-   if (state->filename && state->filename[0] == '-')
-   {
-      state->verbose = 0;
-   }
-
-   return 0;
-}
-
-/**
- * Display usage information for the application to stdout
- *
- * @param app_name String to display as the application name
- */
-static void display_valid_parameters(char *app_name)
-{
-   fprintf(stderr, "Display camera output to display, and optionally saves an H264 capture at requested bitrate\n\n");
-   fprintf(stderr, "\nusage: %s [options]\n\n", app_name);
-
-   fprintf(stderr, "Image parameter commands\n\n");
-
-   raspicli_display_help(cmdline_commands, cmdline_commands_size);
-
-   // Help for preview options
-   raspipreview_display_help();
-
-   // Now display any help information from the camcontrol code
-   raspicamcontrol_display_help();
-
-   fprintf(stderr, "\n");
-
-   return;
 }
 
 /**
@@ -932,21 +673,6 @@ int main(int argc, const char **argv)
 
    default_status(&state);
 
-   // Do we have any parameters
-   if (argc == 1)
-   {
-      fprintf(stderr, "\n%s Camera App %s\n\n", basename(argv[0]), VERSION_STRING);
-
-      display_valid_parameters(basename(argv[0]));
-      exit(0);
-   }
-
-   // Parse the command line and put options in to our status structure
-   if (parse_cmdline(argc, argv, &state))
-   {
-      exit(0);
-   }
-
    if (state.verbose)
    {
       fprintf(stderr, "\n%s Camera App %s\n\n", basename(argv[0]), VERSION_STRING);
@@ -960,15 +686,9 @@ int main(int argc, const char **argv)
    {
       vcos_log_error("%s: Failed to create camera component", __func__);
    }
-   else if (!raspipreview_create(&state.preview_parameters))
-   {
-      vcos_log_error("%s: Failed to create preview component", __func__);
-      destroy_camera_component(&state);
-   }
    else if (!create_encoder_component(&state))
    {
       vcos_log_error("%s: Failed to create encode component", __func__);
-      raspipreview_destroy(&state.preview_parameters);
       destroy_camera_component(&state);
    }
    else
@@ -981,28 +701,9 @@ int main(int argc, const char **argv)
       camera_preview_port = state.camera_component->output[MMAL_CAMERA_PREVIEW_PORT];
       camera_video_port   = state.camera_component->output[MMAL_CAMERA_VIDEO_PORT];
       camera_still_port   = state.camera_component->output[MMAL_CAMERA_CAPTURE_PORT];
-      preview_input_port  = state.preview_parameters.preview_component->input[0];
       encoder_input_port  = state.encoder_component->input[0];
       encoder_output_port = state.encoder_component->output[0];
 
-      if (state.preview_parameters.wantPreview )
-      {
-         if (state.verbose)
-         {
-            fprintf(stderr, "Connecting camera preview port to preview input port\n");
-            fprintf(stderr, "Starting video preview\n");
-         }
-
-         // Connect camera to preview
-         status = connect_ports(camera_preview_port, preview_input_port, &state.preview_connection);
-      }
-      else
-      {
-         status = MMAL_SUCCESS;
-      }
-
-      if (status == MMAL_SUCCESS)
-      {
          if (state.verbose)
             fprintf(stderr, "Connecting camera stills port to encoder input port\n");
 
@@ -1058,23 +759,7 @@ int main(int argc, const char **argv)
             goto error;
          }
 
-         if (state.demoMode)
-         {
-            // Run for the user specific time..
-            int num_iterations = state.timeout / state.demoInterval;
-            int i;
 
-            if (state.verbose)
-               fprintf(stderr, "Running in demo mode\n");
-
-            for (i=0;state.timeout == 0 || i<num_iterations;i++)
-            {
-               raspicamcontrol_cycle_test(state.camera_component);
-               vcos_sleep(state.demoInterval);
-            }
-         }
-         else
-         {
             // Only encode stuff if we have a filename and it opened
             if (output_file)
             {
@@ -1126,13 +811,7 @@ int main(int argc, const char **argv)
                else
                   for (;;) vcos_sleep(ABORT_INTERVAL);
             }
-         }
-      }
-      else
-      {
-         mmal_status_to_int(status);
-         vcos_log_error("%s: Failed to connect camera to preview", __func__);
-      }
+
 
 error:
 
@@ -1145,8 +824,6 @@ error:
       check_disable_port(camera_still_port);
       check_disable_port(encoder_output_port);
 
-      if (state.preview_parameters.wantPreview )
-         mmal_connection_destroy(state.preview_connection);
       mmal_connection_destroy(state.encoder_connection);
 
       // Can now close our file. Note disabling ports may flush buffers which causes
@@ -1158,14 +835,10 @@ error:
       if (state.encoder_component)
          mmal_component_disable(state.encoder_component);
 
-      if (state.preview_parameters.preview_component)
-         mmal_component_disable(state.preview_parameters.preview_component);
-
       if (state.camera_component)
          mmal_component_disable(state.camera_component);
 
       destroy_encoder_component(&state);
-      raspipreview_destroy(&state.preview_parameters);
       destroy_camera_component(&state);
 
       if (state.verbose)
