@@ -146,7 +146,7 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
         g_assert (cairo_overlay);
 
         /* we set the input filename to the source element */
-        g_object_set (G_OBJECT (source), "location", "/home/iwasz/video1.h264", NULL);
+        g_object_set (G_OBJECT (source), "location", "/home/iwasz/Ubuntu One/video1.h264", NULL);
 
         // Set the caps (fps interests us the most).
         GstCaps *caps = gst_caps_new_simple ("video/x-h264",
@@ -172,7 +172,7 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
 
 int main (int argc, char **argv)
 {
-        frames = readFrames ("/home/iwasz/data.csv");
+        frames = readFrames ("data.csv");
 
 #if 0
         std::cerr << frames << std::endl;
