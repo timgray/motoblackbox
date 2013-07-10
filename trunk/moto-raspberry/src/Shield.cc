@@ -7,24 +7,9 @@
 #include <inttypes.h>
 #include <iostream>
 #include <algorithm>
-#include <boost/circular_buffer.hpp>
+#include "Shield.h"
 
 const char *PORT = "/dev/ttyAMA0";
-
-/**
- * Data frame from AVR shield.
- */
-struct Frame {
-        float velocity = 0;
-        float rpm = 0;
-        float engineTemp = 0;
-        float airTemp = 0;
-        bool frontBrake = false;
-        bool rearBrake = false;
-        bool leftTurn = false;
-        bool rightTurn = false;
-        bool parkingLight = false;
-};
 
 std::ostream &operator<< (std::ostream &o, Frame const &f)
 {
@@ -39,47 +24,6 @@ std::ostream &operator<< (std::ostream &o, Frame const &f)
              ", PARKL=" << f.parkingLight;
         return o;
 }
-
-/**
- * AVR shield on top of the RasPI.
- */
-class Shield {
-public:
-
-        Shield (std::string const &port);
-        virtual ~Shield ();
-
-        Frame read ();
-
-private:
-
-        typedef boost::circular_buffer<uint8_t> InputData;
-        bool validateBuffer (InputData const &d);
-        float computeTemp (uint8_t temp);
-
-private:
-
-        int ttyFd = 0;
-        const unsigned int FRAME_SIZE = 8; // Start (command) byte, 6 data bytes and 1 checksum byte.
-
-        const unsigned int BUF_VELOCITY_MSB = 1;
-        const unsigned int BUF_VELOCITY_LSB = 2;
-        const unsigned int BUF_RPM = 3;
-        const unsigned int BUF_ENGINE_TEMP = 4;
-        const unsigned int BUF_GPIO = 5;
-        const unsigned int BUF_AIR_TEMP = 6;
-
-        const unsigned int GPIO_LEFT_TURN = 0;
-        const unsigned int GPIO_RIGHT_TURN = 1;
-        const unsigned int GPIO_FRONT_BRAKE = 2;
-        const unsigned int GPIO_REAR_BRAKE = 3;
-        const unsigned int GPIO_PARKING_LIGHT = 4;
-
-        const float ENGINE_TEMP_FACTOR = 0.5;
-        const float RPM_FACTOR = 50;
-        const float VELOCITY_FACTOR = 0.4; // Found empirically
-        const uint8_t SHIELD_COMMAND_BYTE = 0x01;
-};
 
 Shield::Shield (std::string const &port)
 {
@@ -159,20 +103,4 @@ float Shield::computeTemp (uint8_t temp)
 {
         // Empirical equation. Found by my wife with excel.
         return 0.95515 * temp - 25.724;
-}
-
-/**
- *
- */
-int main (int argc, char** argv)
-{
-        Shield port (PORT);
-        uint8_t cnt = 0;
-        char mark[] = { '/', '-', '\\', '|' };
-
-        while (true) {
-                std::cout << "\033[A\033[2K" << port.read () << " [" << mark[++cnt % 4] << "]" << std::endl;
-        }
-
-        return EXIT_SUCCESS;
 }

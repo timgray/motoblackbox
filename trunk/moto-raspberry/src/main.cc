@@ -48,7 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 // We use some GNU extensions (basename)
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,6 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define VERSION_STRING "v1.1"
 
+extern "C" {
 #include "bcm_host.h"
 #include "interface/vcos/vcos.h"
 
@@ -69,6 +70,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "interface/mmal/util/mmal_connection.h"
 
 #include "RaspiCamControl.h"
+};
+
+#include "Shield.h"
+#include <boost/lockfree/spsc_queue.hpp>
+#include <boost/lockfree/queue.hpp>
+#include <thread>
+//#include <boost/filesystem.hpp>
+
+typedef boost::lockfree::spsc_queue <Frame, boost::lockfree::capacity <10>> Queue;
 
 /// Camera number to use - we only have one camera, indexed from 0.
 #define CAMERA_NUMBER 0
@@ -92,18 +102,18 @@ const int MAX_BITRATE = 30000000; // 30Mbits/s
 const int ABORT_INTERVAL = 100; // ms
 
 
-int mmal_status_to_int(MMAL_STATUS_T status);
+extern "C" int mmal_status_to_int(MMAL_STATUS_T status);
 
 /** Structure containing all state information for the current run
  */
 typedef struct
 {
    int timeout;                        /// Time taken before frame is grabbed and app then shuts down. Units are milliseconds
-   int width;                          /// Requested width of image
-   int height;                         /// requested height of image
+   unsigned int width;                          /// Requested width of image
+   unsigned int height;                         /// requested height of image
    int bitrate;                        /// Requested bitrate
    int framerate;                      /// Requested frame rate (fps)
-   int intraperiod;                    /// Intra-refresh period (key frame rate)
+   unsigned int intraperiod;                    /// Intra-refresh period (key frame rate)
    char *filename;                     /// filename of output file
    int verbose;                        /// !0 if want detailed run information
    int immutableInput;                /// Flag to specify whether encoder works in place or creates a new buffer. Result is preview can display either
@@ -126,6 +136,7 @@ typedef struct
    FILE *file_handle;                   /// File handle to write buffer data to.
    RASPIVID_STATE *pstate;            /// pointer to our state in case required in callback
    int abort;                           /// Set to 1 in callback if an error occurs to attempt to abort the capture
+   Queue *queue;
 } PORT_USERDATA;
 
 /**
@@ -203,6 +214,32 @@ static void camera_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buf
 }
 
 /**
+ *
+ */
+FILE *rotateFiles (FILE *file)
+{
+        const int FILE_NAME_LEN = 32;
+        const int FRAMES_PER_FILE = 90;
+        char filename[FILE_NAME_LEN];
+        static unsigned int fileNo = 0;
+        static unsigned int frameCnt = 0;
+
+        if (!file || frameCnt++ > FRAMES_PER_FILE) {
+
+                if (file) {
+                        fclose (file);
+                }
+
+                snprintf (filename, FILE_NAME_LEN, "%05d.h264", fileNo++);
+                std::cerr << "New file : " << filename << std::endl;
+                file = fopen(filename, "wb");
+                frameCnt = 0;
+        }
+
+        return file;
+}
+
+/**
  *  buffer header callback function for encoder
  *
  *  Callback will dump buffer data to the specific file
@@ -212,54 +249,53 @@ static void camera_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buf
  */
 static void encoder_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-   MMAL_BUFFER_HEADER_T *new_buffer;
+        MMAL_BUFFER_HEADER_T *new_buffer;
+        // We pass our file handle and other stuff in via the userdata field.
+        PORT_USERDATA *pData = (PORT_USERDATA *) port->userdata;
 
-   // We pass our file handle and other stuff in via the userdata field.
+        if (pData) {
+                int bytes_written = buffer->length;
 
-   PORT_USERDATA *pData = (PORT_USERDATA *)port->userdata;
+                std::cerr << "Open" << std::endl;
+                pData->file_handle = rotateFiles (pData->file_handle);
 
-   if (pData)
-   {
-      int bytes_written = buffer->length;
+                if (buffer->length) {
+                        mmal_buffer_header_mem_lock(buffer);
+                        bytes_written = fwrite(buffer->data, 1, buffer->length, pData->file_handle);
+                        mmal_buffer_header_mem_unlock(buffer);
+                }
 
-      vcos_assert(pData->file_handle);
+                if (bytes_written != buffer->length) {
+                        vcos_log_error("Failed to write buffer data - aborting");
+                        pData->abort = 1;
+                }
 
-      if (buffer->length)
-      {
-         mmal_buffer_header_mem_lock(buffer);
+                // Store sield data;
+//                Frame frame;
+//                while (pData->queue->pop(frame)) {
+//                        std::cerr << frame << std::endl;
+//                }
+        } else {
+                vcos_log_error("Received a encoder buffer callback with no state");
+        }
 
-         bytes_written = fwrite(buffer->data, 1, buffer->length, pData->file_handle);
+        // release buffer back to the pool
+        mmal_buffer_header_release(buffer);
 
-         mmal_buffer_header_mem_unlock(buffer);
-      }
+        // and send one back to the port (if still open)
+        if (port->is_enabled) {
+                MMAL_STATUS_T status;
 
-      if (bytes_written != buffer->length)
-      {
-         vcos_log_error("Failed to write buffer data - aborting");
-         pData->abort = 1;
-      }
-   }
-   else
-   {
-      vcos_log_error("Received a encoder buffer callback with no state");
-   }
+                new_buffer = mmal_queue_get(pData->pstate->encoder_pool->queue);
 
-   // release buffer back to the pool
-   mmal_buffer_header_release(buffer);
+                if (new_buffer) {
+                        status = mmal_port_send_buffer(port, new_buffer);
+                }
 
-   // and send one back to the port (if still open)
-   if (port->is_enabled)
-   {
-      MMAL_STATUS_T status;
-
-      new_buffer = mmal_queue_get(pData->pstate->encoder_pool->queue);
-
-      if (new_buffer)
-         status = mmal_port_send_buffer(port, new_buffer);
-
-      if (!new_buffer || status != MMAL_SUCCESS)
-         vcos_log_error("Unable to return a buffer to the encoder port");
-   }
+                if (!new_buffer || status != MMAL_SUCCESS) {
+                        vcos_log_error("Unable to return a buffer to the encoder port");
+                }
+        }
 }
 
 
@@ -648,6 +684,25 @@ static void signal_handler(int signal_number)
 }
 
 /**
+ *
+ */
+void shieldThread (std::string const &portFile, Queue *queue)
+{
+        Shield port (portFile);
+        uint8_t cnt = 0;
+        char mark[] = { '/', '-', '\\', '|' };
+
+        while (true) {
+#if 0
+                std::cout << "\033[A\033[2K" << port.read () << " [" << mark[++cnt % 4] << "]" << std::endl;
+#endif
+                queue->push (port.read ());
+        }
+}
+
+
+
+/**
  * main
  */
 int main(int argc, const char **argv)
@@ -655,7 +710,7 @@ int main(int argc, const char **argv)
    // Our main data storage vessel..
    RASPIVID_STATE state;
 
-   MMAL_STATUS_T status = -1;
+   MMAL_STATUS_T status = MMAL_STATUS_MAX;
    MMAL_PORT_T *camera_preview_port = NULL;
    MMAL_PORT_T *camera_video_port = NULL;
    MMAL_PORT_T *camera_still_port = NULL;
@@ -694,6 +749,7 @@ int main(int argc, const char **argv)
    else
    {
       PORT_USERDATA callback_data;
+      Queue queue;
 
       if (state.verbose)
          fprintf(stderr, "Starting component connection stage\n");
@@ -718,32 +774,33 @@ int main(int argc, const char **argv)
 
          if (state.filename)
          {
-            if (state.filename[0] == '-')
-            {
-               output_file = stdout;
-
-               // Ensure we don't upset the output stream with diagnostics/info
-               state.verbose = 0;
-            }
-            else
-            {
-               if (state.verbose)
-                  fprintf(stderr, "Opening output file \"%s\"\n", state.filename);
-
+//            if (state.filename[0] == '-')
+//            {
+//               output_file = stdout;
+//
+//               // Ensure we don't upset the output stream with diagnostics/info
+//               state.verbose = 0;
+//            }
+//            else
+//            {
+//               if (state.verbose)
+//                  fprintf(stderr, "Opening output file \"%s\"\n", state.filename);
+//
                output_file = fopen(state.filename, "wb");
-            }
-
-            if (!output_file)
-            {
-               // Notify user, carry on but discarding encoded output buffers
-               vcos_log_error("%s: Error opening output file: %s\nNo output file will be generated\n", __func__, state.filename);
-            }
+//            }
+//
+//            if (!output_file)
+//            {
+//               // Notify user, carry on but discarding encoded output buffers
+//               vcos_log_error("%s: Error opening output file: %s\nNo output file will be generated\n", __func__, state.filename);
+//            }
          }
 
          // Set up our userdata - this is passed though to the callback where we need the information.
-         callback_data.file_handle = output_file;
+         callback_data.file_handle = rotateFiles (NULL);
          callback_data.pstate = &state;
          callback_data.abort = 0;
+         callback_data.queue = &queue;
 
          encoder_output_port->userdata = (struct MMAL_PORT_USERDATA_T *)&callback_data;
 
@@ -767,6 +824,10 @@ int main(int argc, const char **argv)
 
                if (state.verbose)
                   fprintf(stderr, "Starting video capture\n");
+
+               // Start shield process;
+                std::thread t {shieldThread, std::string (PORT), &queue};
+                t.detach ();
 
                if (mmal_port_parameter_set_boolean(camera_video_port, MMAL_PARAMETER_CAPTURE, 1) != MMAL_SUCCESS)
                {
