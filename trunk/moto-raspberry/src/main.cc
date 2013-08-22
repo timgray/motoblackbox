@@ -256,7 +256,7 @@ static void encoder_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buf
         if (pData) {
                 int bytes_written = buffer->length;
 
-                std::cerr << "Open" << std::endl;
+//                std::cerr << "Open" << std::endl;
                 pData->file_handle = rotateFiles (pData->file_handle);
 
                 if (buffer->length) {
@@ -271,10 +271,10 @@ static void encoder_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buf
                 }
 
                 // Store sield data;
-//                Frame frame;
-//                while (pData->queue->pop(frame)) {
-//                        std::cerr << frame << std::endl;
-//                }
+                Frame frame;
+                while (pData->queue->pop(frame)) {
+                        std::cerr << frame << std::endl;
+                }
         } else {
                 vcos_log_error("Received a encoder buffer callback with no state");
         }
@@ -910,4 +910,20 @@ error:
 
    return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
