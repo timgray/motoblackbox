@@ -9,8 +9,6 @@ PROJECT (moto-raspberry)
 # Definicje per płytka/procesor etc.
 include (raspberrypi.cmake)
 
-ADD_DEFINITIONS(-std=c++11)
-
 # cd /home/iwasz/Downloads/
 # git clone https://github.com/raspberrypi/userland.git
 # you get the idea...
@@ -34,3 +32,4 @@ target_link_libraries(${PROJECT_NAME} mmal_util)
 target_link_libraries(${PROJECT_NAME} mmal_vc_client)
 target_link_libraries(${PROJECT_NAME} vcos)
 target_link_libraries(${PROJECT_NAME} bcm_host)
+
