@@ -135,18 +135,25 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
         GstElement *source              = gst_element_factory_make ("filesrc", "source");
         GstElement *filter              = gst_element_factory_make ("capsfilter", "filter");
         GstElement *parser              = gst_element_factory_make ("h264parse", "parser");
-        GstElement *decoder             = gst_element_factory_make ("avdec_h264", "encoder");
+        GstElement *decoder             = gst_element_factory_make ("avdec_h264", "decoder");
         GstElement *adaptor1            = gst_element_factory_make ("videoconvert", "adaptor1");
         GstElement *cairo_overlay       = gst_element_factory_make ("cairooverlay", "overlay");
         GstElement *adaptor2            = gst_element_factory_make ("videoconvert", "adaptor2");
 //        GstElement *videorate           = gst_element_factory_make ("videorate", "rate");
-        GstElement *sink                = gst_element_factory_make ("autovideosink", "sink");
+//        GstElement *sink                = gst_element_factory_make ("autovideosink", "sink");
+
+//        ! x264enc byte-stream=true ! filesink location=$2
+
+        GstElement *encoder             = gst_element_factory_make ("x264enc", "encoder");
+        GstElement *matroska            = gst_element_factory_make ("matroskamux", "matroska");
+        GstElement *sink                = gst_element_factory_make ("filesink", "sink");
+        g_object_set (G_OBJECT (sink), "location", "video.mkv", NULL);
 
         /* If failing, the element could not be created */
         g_assert (cairo_overlay);
 
-        /* we set the input filename to the source element */
-        g_object_set (G_OBJECT (source), "location", "/home/iwasz/Ubuntu One/video1.h264", NULL);
+        g_object_set (G_OBJECT (encoder), "byte-stream", 1, NULL);
+        g_object_set (G_OBJECT (source), "location", "00000.h264", NULL);
 
         // Set the caps (fps interests us the most).
         GstCaps *caps = gst_caps_new_simple ("video/x-h264",
@@ -160,9 +167,9 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
         g_signal_connect (cairo_overlay, "draw", G_CALLBACK (draw_overlay), overlay_state);
         g_signal_connect (cairo_overlay, "caps-changed", G_CALLBACK (prepare_overlay), overlay_state);
 
-        gst_bin_add_many (GST_BIN (pipeline), source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ sink, NULL);
+        gst_bin_add_many (GST_BIN (pipeline), source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ encoder, matroska, sink, NULL);
 
-        if (!gst_element_link_many (source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ sink, NULL)) {
+        if (!gst_element_link_many (source, filter, parser, decoder, adaptor1, cairo_overlay, adaptor2, /*videorate,*/ encoder, matroska, sink, NULL)) {
                 g_warning ("Failed to link elements!");
         }
 
@@ -172,7 +179,7 @@ setup_gst_pipeline (CairoOverlayState * overlay_state)
 
 int main (int argc, char **argv)
 {
-        frames = readFrames ("data.csv");
+        frames = readFrames ("00000.csv");
 
 #if 0
         std::cerr << frames << std::endl;
