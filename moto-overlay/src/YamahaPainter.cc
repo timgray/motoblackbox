@@ -78,13 +78,13 @@ void YamahaPainter::paint (cairo_t *cr, Frame const &dto)
         cairo_set_font_size (cr, 18.0);
         cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
         cairo_move_to(cr, 1006, 605);
-        cairo_show_text(cr, boost::lexical_cast <std::string> (dto.velocity).c_str ());
+        cairo_show_text(cr, boost::lexical_cast <std::string> (int (dto.velocity + 0.5)).c_str ());
 
         // Temp
         cairo_set_font_size (cr, 10.0);
         cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
         cairo_move_to(cr, 950, 595);
-        cairo_show_text(cr, boost::lexical_cast <std::string> (dto.engineTemp).c_str ());
+        cairo_show_text(cr, boost::lexical_cast <std::string> (int (dto.engineTemp + 0.5)).c_str ());
 
         // Pointer
         cairo_translate (cr, 1115.5, 611);
