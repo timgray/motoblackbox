@@ -1,0 +1,1 @@
+Software and firmware for my motorcycle video logger / recorder project. Visit http://www.iwasz.pl/electronics/motorcycle-black-box-part-1-data-acquisition-with-arduino-mega/ for more info.
